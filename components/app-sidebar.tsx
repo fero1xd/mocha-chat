@@ -17,6 +17,7 @@ import { Coffee, Search, Trash } from "lucide-react";
 import { Link } from "react-router";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
+import { AuthState } from "./auth-state";
 
 export function AppSidebar() {
   return (
@@ -60,33 +61,31 @@ export function AppSidebar() {
 
           <SidebarGroupContent>
             <SidebarMenu>
-              {[
-                { title: "Rs in strawberry", url: "" },
-                {
-                  title: "Black Holes Reality",
-                  url: "",
-                },
-              ].map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
+              {new Array(1)
+                .fill({ title: "Rs in strawberry", url: "" })
+                .map((item, i) => (
+                  <SidebarMenuItem key={i}>
+                    <SidebarMenuButton asChild>
+                      <Link to={item.url}>
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
 
-                  <SidebarMenuAction
-                    showOnHover
-                    className="transition-opacity duration-75 ease-in-out"
-                  >
-                    <Trash />
-                  </SidebarMenuAction>
-                </SidebarMenuItem>
-              ))}
+                    <SidebarMenuAction
+                      showOnHover
+                      className="transition-opacity duration-75 ease-in-out"
+                    >
+                      <Trash />
+                    </SidebarMenuAction>
+                  </SidebarMenuItem>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <AuthState />
+      </SidebarFooter>
     </Sidebar>
   );
 }
