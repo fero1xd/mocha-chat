@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Libre_Baskerville, IBM_Plex_Mono, Lora } from "next/font/google";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -35,7 +36,7 @@ export default function RootLayout({
       <body
         className={`${libre.variable} ${mono.variable} ${serif.variable} antialiased dark font-sans`}
       >
-        {children}
+        <SidebarProvider>{children}</SidebarProvider>
       </body>
     </html>
   );

@@ -94,7 +94,7 @@
   --font-sans: var(--font-libre-baskerville), serif;
   --font-serif: var(--font-lora), serif;
   --font-mono: var(--font-ibm-mono), monospace;
-  --radius: 0.25rem;
+  --radius: 0.35rem;
   --shadow-2xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
   --shadow-xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
   --shadow-sm: 2px 3px 5px 0px hsl(28 13% 20% / 0.12),
@@ -161,6 +161,8 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+
+  --color-chat-input-background: hsla(270, 10%, 20%, var(--blur-fallback, 0.4));
 }
 
 @layer base {
