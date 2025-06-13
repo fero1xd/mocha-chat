@@ -1,4 +1,4 @@
-import { QueryClient, QueryMeta, queryOptions } from "@tanstack/react-query"
+import { queryOptions } from "@tanstack/react-query"
 import { User } from "better-auth";
 import { createAuthClient } from "better-auth/react"
 import { createRemoteJWKSet, jwtVerify } from "jose";
@@ -23,35 +23,6 @@ export async function verifyJwt(jwt: string) {
     }
 }
 
-export const fetchJwt = ({ client, meta }: {
-    client: QueryClient; meta: QueryMeta | undefined;
-}) => {
-    return new Promise<string>((res, rej) => {
-        if (meta!.first) {
-            meta!.first = false;
-            client.ensureQueryData(sessionQueryOptions).then((d) => {
-                res(d.jwt);
-            }).catch((err) => {
-                rej(err)
-            })
-        } else {
-            authClient.getSession({
-                fetchOptions: {
-                    onSuccess: (ctx) => {
-                        const jwt = ctx.response.headers.get("set-auth-jwt")
-                        if (!jwt) {
-                            rej("no jwt in response");
-                            return
-                        }
-
-                        res(jwt)
-                    }
-                }
-            }).catch(rej)
-        }
-    })
-}
-
 export const sessionQueryOptions = queryOptions({
     queryKey: ["session"],
     queryFn: async () => {
@@ -70,13 +41,3 @@ export const sessionQueryOptions = queryOptions({
     retry: false,
     refetchOnWindowFocus: false
 });
-
-export const jwtQueryOptions = queryOptions({
-    queryKey: ["jwt"],
-    queryFn: fetchJwt,
-    meta: {
-        first: true
-    },
-    retry: false,
-    refetchOnWindowFocus: false
-})

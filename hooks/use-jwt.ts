@@ -1,4 +1,4 @@
-import { jwtQueryOptions, sessionQueryOptions, verifyJwt } from "@/lib/auth/client";
+import { sessionQueryOptions, verifyJwt } from "@/lib/auth/client";
 import { betterJsonParse } from "@/lib/utils";
 import { skipToken, useQuery } from "@tanstack/react-query";
 import { User } from "better-auth";
@@ -12,23 +12,21 @@ export function useUser() {
 
     const { data: session, isPending: sessionPending, isError: sessionErr } = useQuery(sessionQueryOptions);
 
-    const { data: jwt, isPending: jwtFetchPending, isError: jwtError } = useQuery(jwtQueryOptions);
-
     useEffect(() => {
-        if (jwt && jwt !== localJwt) {
-            setCookie("jwt", jwt, {
+        if (session?.jwt && session.jwt !== localJwt) {
+            setCookie("jwt", session.jwt, {
                 httpOnly: false,
                 path: "/",
                 sameSite: "lax",
                 maxAge: 172800
             });
         }
-    }, [jwt])
+    }, [session?.jwt])
 
-    const { data: payload, isError: verifyErr } = useQuery({
-        queryKey: ['verify-jwt', jwt],
-        queryFn: !jwt ? skipToken : () => verifyJwt(jwt),
-        enabled: !!jwt,
+    const { isError: verifyErr } = useQuery({
+        queryKey: ['verify-jwt', session?.jwt],
+        queryFn: !session?.jwt ? skipToken : () => verifyJwt(session.jwt),
+        enabled: !!session?.jwt,
         retry: false,
         refetchOnWindowFocus: false
     })
@@ -39,11 +37,11 @@ export function useUser() {
         decodedPayload._safe = false;
     }
 
-    const isError = sessionErr || jwtError || verifyErr
+    const isError = sessionErr || verifyErr
     return {
-        user: isError ? null : (session?.user ?? payload ?? decodedPayload),
-        realUser: session,
-        isRealLoading: sessionPending || jwtFetchPending,
+        user: isError ? null : (session?.user ?? decodedPayload),
+        realUser: session?.user,
+        isRealLoading: sessionPending,
         isError
     }
 }

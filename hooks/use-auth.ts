@@ -1,8 +1,8 @@
-import { jwtQueryOptions } from "@/lib/auth/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { ConvexProviderWithAuth } from "convex/react";
 import { useCallback } from "react";
 import { useUser } from "./use-jwt";
+import { sessionQueryOptions } from "@/lib/auth/client";
 
 export function useAuthForConvex(): ReturnType<
     React.ComponentProps<typeof ConvexProviderWithAuth>["useAuth"]
@@ -18,7 +18,8 @@ export function useAuthForConvex(): ReturnType<
             // if (args.forceRefreshToken) {
             //     return queryClient.fetchQuery(jwtQueryOptions);
             // }
-            return queryClient.ensureQueryData(jwtQueryOptions);
+            const data = await queryClient.ensureQueryData(sessionQueryOptions);
+            return data.jwt;
         },
         [queryClient, user],
     );
