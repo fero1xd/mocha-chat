@@ -17,7 +17,6 @@ export function useModel() {
         model && localStorage.setItem(KEY, model);
     }, [model])
 
-    console.log({ isValid, fromLocal });
 
     return { model: model ?? fromLocal ?? DEFAULT_MODEL, setModel };
 }

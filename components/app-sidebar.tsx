@@ -17,7 +17,7 @@ import { Coffee, Search, Trash } from "lucide-react";
 import { Link } from "react-router";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
-import { AuthState } from "./auth-state";
+import { AuthState } from "./sidebar-auth-state";
 
 export function AppSidebar() {
   return (

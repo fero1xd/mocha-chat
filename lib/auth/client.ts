@@ -1,0 +1,82 @@
+import { QueryClient, QueryMeta, queryOptions } from "@tanstack/react-query"
+import { User } from "better-auth";
+import { createAuthClient } from "better-auth/react"
+import { createRemoteJWKSet, jwtVerify } from "jose";
+
+export const authClient = createAuthClient({
+    baseURL: "http://localhost:3000",
+})
+
+export async function verifyJwt(jwt: string) {
+    try {
+        const JWKS = createRemoteJWKSet(
+            new URL('http://localhost:3000/api/auth/jwks')
+        )
+        const { payload } = await jwtVerify<User>(jwt, JWKS, {
+            issuer: 'http://localhost:3000',
+            audience: 'http://localhost:3000',
+        })
+        return payload
+    } catch (error) {
+        console.error('Token validation failed:', error)
+        throw error
+    }
+}
+
+export const fetchJwt = ({ client, meta }: {
+    client: QueryClient; meta: QueryMeta | undefined;
+}) => {
+    return new Promise<string>((res, rej) => {
+        if (meta!.first) {
+            meta!.first = false;
+            client.ensureQueryData(sessionQueryOptions).then((d) => {
+                res(d.jwt);
+            }).catch((err) => {
+                rej(err)
+            })
+        } else {
+            authClient.getSession({
+                fetchOptions: {
+                    onSuccess: (ctx) => {
+                        const jwt = ctx.response.headers.get("set-auth-jwt")
+                        if (!jwt) {
+                            rej("no jwt in response");
+                            return
+                        }
+
+                        res(jwt)
+                    }
+                }
+            }).catch(rej)
+        }
+    })
+}
+
+export const sessionQueryOptions = queryOptions({
+    queryKey: ["session"],
+    queryFn: async () => {
+        let jwt: string | null = null;
+        const session = await authClient.getSession({
+            fetchOptions: {
+                onSuccess: (ctx) => {
+                    const rjwt = ctx.response.headers.get("set-auth-jwt")
+                    jwt = rjwt;
+                }
+            }
+        })
+        if (!jwt) throw new Error("oh no");
+        return { ...session.data, jwt: jwt as string };
+    },
+    retry: false,
+    refetchOnWindowFocus: false
+});
+
+export const jwtQueryOptions = queryOptions({
+    queryKey: ["jwt"],
+    queryFn: fetchJwt,
+    meta: {
+        first: true
+    },
+    retry: false,
+    refetchOnWindowFocus: false
+})

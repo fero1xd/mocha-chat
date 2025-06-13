@@ -57,7 +57,6 @@ export function ModelSwitcher() {
                   key={m}
                   value={m}
                   onSelect={(currentValue) => {
-                    console.log(currentValue);
                     setModel(currentValue as ModelType);
                     setOpen(false);
                   }}
