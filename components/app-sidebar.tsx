@@ -18,6 +18,8 @@ import { Link } from "react-router";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { AuthState } from "./sidebar-auth-state";
+import { Authenticated } from "convex/react";
+import { Threads } from "./threads";
 
 export function AppSidebar() {
   return (
@@ -58,28 +60,8 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Threads</SidebarGroupLabel>
-
           <SidebarGroupContent>
-            <SidebarMenu>
-              {new Array(1)
-                .fill({ title: "Rs in strawberry", url: "" })
-                .map((item, i) => (
-                  <SidebarMenuItem key={i}>
-                    <SidebarMenuButton asChild>
-                      <Link to={item.url}>
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-
-                    <SidebarMenuAction
-                      showOnHover
-                      className="transition-opacity duration-75 ease-in-out"
-                    >
-                      <Trash />
-                    </SidebarMenuAction>
-                  </SidebarMenuItem>
-                ))}
-            </SidebarMenu>
+            <Threads />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

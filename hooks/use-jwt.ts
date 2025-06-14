@@ -24,9 +24,9 @@ export function useUser() {
     }, [session?.jwt])
 
     const { isError: verifyErr } = useQuery({
-        queryKey: ['verify-jwt', session?.jwt],
-        queryFn: !session?.jwt ? skipToken : () => verifyJwt(session.jwt),
-        enabled: !!session?.jwt,
+        queryKey: ['verify-jwt', localJwt],
+        queryFn: !localJwt ? skipToken : () => verifyJwt(localJwt),
+        enabled: !!localJwt,
         retry: false,
         refetchOnWindowFocus: false
     })

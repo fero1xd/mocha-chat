@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function betterJsonParse<T>(raw?: string): T | null {
+export function betterJsonParse<T>(raw?: string | null): T | null {
   try {
     const r = JSON.parse(raw || "null");
     return r ?? null;
