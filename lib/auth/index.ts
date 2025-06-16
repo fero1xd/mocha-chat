@@ -53,6 +53,7 @@ export const auth = betterAuth({
             },
             jwks: {
                 keyPairConfig: {
+                    // only one supported by convex
                     alg: "RS256",
                 }
             }

@@ -6,11 +6,56 @@ const schema = defineSchema({
         id: v.string(),
         title: v.string(),
         userId: v.string(),
-        lastMessageAt: v.number()
-    }).
-        index("by_userId", ["userId"]).
-        index("by_id_userId", ["id", "userId"]).
-        index("by_last_message", ["lastMessageAt"])
+        lastMessageAt: v.number(),
+        isStreaming: v.boolean(),
+    })
+        .index("by_userId", ["userId"])
+        .index("by_thread_user_id", ["id", "userId"]),
+
+    messages: defineTable({
+        threadId: v.string(),
+        userId: v.string(),
+        content: v.string(),
+        role: v.union(
+            v.literal("user"),
+            v.literal("assistant"),
+            v.literal("data"),
+            v.literal("system")
+        ),
+        parts: v.array(v.union(
+            v.object({
+                type: v.literal('text'),
+                text: v.string()
+            }),
+            v.object({
+                type: v.literal('reasoning'),
+                reasoning: v.string(),
+                details: v.any()
+            }),
+            v.object({
+                // not using any tools in this app
+                type: v.literal('tool-invocation'),
+                toolInvocation: v.any()
+            }),
+            v.object({
+                type: v.literal('source'),
+                source: v.object({
+                    sourceType: v.literal("url"),
+                    id: v.string(),
+                    url: v.string(),
+                    title: v.optional(v.string())
+                })
+            }),
+            v.object({
+                type: v.literal('file'),
+                mimeType: v.string(),
+                data: v.string()
+            }),
+            v.object({
+                type: v.literal('step-start'),
+            }),
+        ))
+    }).index("by_thread_user_id", ["threadId", "userId"])
 })
 
 export default schema;

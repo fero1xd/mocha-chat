@@ -13,7 +13,6 @@ export function useAuthForConvex(): ReturnType<
 
     const fetchAccessToken = useCallback(
         async (args: { forceRefreshToken: boolean }) => {
-            console.log({ args });
             if (!user) return null;
             // if (args.forceRefreshToken) {
             //     return queryClient.fetchQuery(jwtQueryOptions);

@@ -2,7 +2,7 @@ import { sessionQueryOptions, verifyJwt } from "@/lib/auth/client";
 import { betterJsonParse } from "@/lib/utils";
 import { skipToken, useQuery } from "@tanstack/react-query";
 import { User } from "better-auth";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useCookies } from "react-cookie";
 
 export function useUser() {
@@ -28,14 +28,13 @@ export function useUser() {
         queryFn: !localJwt ? skipToken : () => verifyJwt(localJwt),
         enabled: !!localJwt,
         retry: false,
-        refetchOnWindowFocus: false
     })
 
-    const decodedPayload = betterJsonParse<User>(atob(localJwt?.split('.')?.[1] ?? ""));
-    if (decodedPayload) {
-        // @ts-expect-error
-        decodedPayload._safe = false;
-    }
+    const decodedPayload =
+        useMemo(() =>
+            betterJsonParse<User>(atob(localJwt?.split('.')?.[1] ?? ""))
+            , [localJwt])
+
 
     const isError = sessionErr || verifyErr
     return {

@@ -1,25 +1,20 @@
 import {
   Sidebar,
-  SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarInput,
   SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Label } from "./ui/label";
-import { Coffee, Search, Trash } from "lucide-react";
-import { Link } from "react-router";
+import { Coffee, Search } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { AuthState } from "./sidebar-auth-state";
-import { Authenticated } from "convex/react";
 import { Threads } from "./threads";
+import { Link } from "./ui/better-link";
 
 export function AppSidebar() {
   return (
@@ -36,7 +31,9 @@ export function AppSidebar() {
 
         <SidebarGroup>
           <SidebarGroupContent>
-            <Button className="w-full">New Thread</Button>
+            <Button className="w-full" asChild>
+              <Link to="/">New Thread</Link>
+            </Button>
           </SidebarGroupContent>
         </SidebarGroup>
 
@@ -57,14 +54,8 @@ export function AppSidebar() {
         </form>
         <Separator className="mt-2" />
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Threads</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <Threads />
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+
+      <Threads />
       <SidebarFooter>
         <AuthState />
       </SidebarFooter>

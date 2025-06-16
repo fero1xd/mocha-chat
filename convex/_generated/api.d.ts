@@ -14,7 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as helpers from "../helpers.js";
-import type * as test from "../test.js";
+import type * as messages from "../messages.js";
 import type * as threads from "../threads.js";
 import type * as types from "../types.js";
 
@@ -28,7 +28,7 @@ import type * as types from "../types.js";
  */
 declare const fullApi: ApiFromModules<{
   helpers: typeof helpers;
-  test: typeof test;
+  messages: typeof messages;
   threads: typeof threads;
   types: typeof types;
 }>;

@@ -1,4 +1,3 @@
-import { useModel } from "@/hooks/use-model";
 import { MODELS, ModelType } from "@/lib/models";
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown } from "lucide-react";
@@ -15,6 +14,7 @@ import {
   CommandList,
 } from "./ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { useModel } from "@/stores/model";
 
 export function ModelSwitcher() {
   const [open, setOpen] = useState(false);

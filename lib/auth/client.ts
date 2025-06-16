@@ -39,5 +39,16 @@ export const sessionQueryOptions = queryOptions({
         return { ...session.data, jwt: jwt as string };
     },
     retry: false,
-    refetchOnWindowFocus: false
 });
+
+
+export const logout = () => {
+    localStorage.removeItem("threads");
+    return authClient.signOut({
+        fetchOptions: {
+            onSuccess: () => {
+                window.location.href = '/';
+            }
+        }
+    })
+}

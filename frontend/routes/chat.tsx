@@ -1,18 +1,15 @@
 import { ChatInput } from "@/components/chat-input";
+import { Messages } from "@/components/chat/messages";
 import { Topbar } from "@/components/chat/topbar";
-import { Startup } from "@/components/home/startup";
-import { useChatbox } from "@/stores/chatbox";
 
-export function HomePage() {
-  const setPrompt = useChatbox((s) => s.setPrompt);
-
+export function ChatPage() {
   return (
     <>
-      <div className="p-4 pt-0 flex h-full w-full flex-col overflow-y-scroll">
+      <div className="p-4 pt-0 flex h-full w-full flex-col overflow-y-scroll pb-[30px]">
         <Topbar />
 
         <div className="flex-1 pt-12 max-sm:pt-14 pb-[122px] ">
-          <Startup onSelect={setPrompt} />
+          <Messages />
         </div>
       </div>
 
