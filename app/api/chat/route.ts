@@ -4,7 +4,7 @@ import { generateTitle } from '@/lib/chat/generate-title';
 import { systemPrompt } from '@/lib/chat/system-prompt';
 import { MODELS_CONFIG } from '@/lib/model-config';
 import { convex } from '@/lib/server-convex';
-import { CoreMessage, createDataStreamResponse, Message, smoothStream, streamText, tool, UIMessage } from 'ai';
+import { CoreMessage, createDataStreamResponse, Message, processDataStream, smoothStream, streamText, tool, UIMessage } from 'ai';
 import { headers as getHeaders, cookies as getCookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
@@ -165,6 +165,7 @@ export async function POST(req: Request) {
             }
         })()
 
+
         return result.toDataStreamResponse({
             sendReasoning: true,
             getErrorMessage(error) {
@@ -176,10 +177,11 @@ export async function POST(req: Request) {
                     return error;
                 }
 
-                if (error instanceof Error) {
-                    return error.message;
-                }
                 console.dir(error, { depth: null });
+                if (error instanceof Error) {
+                    return "An error occured";
+                }
+
                 return "An unknown error occured";
             },
         });
