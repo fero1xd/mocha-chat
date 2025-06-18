@@ -3,7 +3,7 @@ import { User } from "better-auth";
 import { createAuthClient } from "better-auth/react"
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-const url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+const url = `https://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`
 
 export const authClient = createAuthClient({
     baseURL: url
