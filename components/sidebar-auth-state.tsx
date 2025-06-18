@@ -104,6 +104,8 @@ export function AuthState() {
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => {
+                localStorage.removeItem("threads");
+                localStorage.removeItem("jwt");
                 authClient.signOut({
                   fetchOptions: {
                     onSuccess: () => {
