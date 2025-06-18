@@ -12,6 +12,8 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Id } from "@/convex/_generated/dataModel";
 import { useModals } from "@/stores/use-modals";
+import posthog from "posthog-js";
+import { useModel } from "@/stores/model";
 
 export function ChatInput() {
   const { threadId } = useParams();
@@ -78,6 +80,13 @@ export function ChatInput() {
       };
 
       const isNewThread = threadId !== threadIdToUse;
+
+      posthog.capture("chat-generate", {
+        threadIdToUse,
+        prompt,
+        model: useModel.getState().model,
+        isNewThread,
+      });
 
       const chatHistory = isNewThread
         ? []

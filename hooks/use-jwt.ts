@@ -2,6 +2,7 @@ import { sessionQueryOptions, verifyJwt } from "@/lib/auth/client";
 import { betterJsonParse } from "@/lib/utils";
 import { skipToken, useQuery } from "@tanstack/react-query";
 import { User } from "better-auth";
+import posthog from "posthog-js";
 import { useEffect, useMemo } from "react";
 import { useCookies } from "react-cookie";
 
@@ -22,6 +23,14 @@ export function useUser() {
             });
         }
     }, [session?.jwt])
+
+    useEffect(() => {
+        if (session) {
+            posthog.identify(session.user?.id, {
+                email: session.user?.email
+            })
+        }
+    }, [session])
 
     const { isError: verifyErr } = useQuery({
         queryKey: ['verify-jwt', localJwt],

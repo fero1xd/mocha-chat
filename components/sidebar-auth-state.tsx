@@ -13,6 +13,7 @@ import { Separator } from "./ui/separator";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 import { Skeleton } from "./ui/skeleton";
 import Image from "next/image";
+import posthog from "posthog-js";
 
 export function AuthState() {
   const [loading, setLoading] = useState(false);
@@ -47,6 +48,7 @@ export function AuthState() {
             disabled={loading}
             onClick={async () => {
               setLoading(true);
+              posthog.capture("Login");
               await authClient.signIn.social({
                 provider: "github",
               });

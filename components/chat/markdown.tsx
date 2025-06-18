@@ -41,10 +41,6 @@ function CodeBlock({ children, className, ...props }: CodeComponentProps) {
           theme={"kanagawa-dragon"}
           className="text-sm font-mono rounded-full"
           showLanguage={false}
-          // language={lang}
-          // theme={"kanagawa-dragon"}
-          // className="text-sm font-mono rounded-full"
-          // showLanguage={false}
         >
           {String(children)}
         </ShikiHighlighter>

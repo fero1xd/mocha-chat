@@ -1,3 +1,5 @@
+import './sentry';
+import * as Sentry from '@sentry/node';
 import { api } from '@/convex/_generated/api';
 import { auth } from '@/lib/auth';
 import { generateTitle } from '@/lib/chat/generate-title';
@@ -6,7 +8,8 @@ import { MODELS_CONFIG } from '@/lib/model-config';
 import { convex } from '@/lib/server-convex';
 import { CoreMessage, Message, smoothStream, streamText } from 'ai';
 import { cookies as getCookies, headers as getHeaders } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
+import { phNode } from './ph';
 
 
 // Allow streaming responses up to 30 seconds
@@ -15,13 +18,13 @@ export const maxDuration = 30;
 const ERROR_MSG = "An error occured while generating a response";
 
 export async function POST(req: Request) {
+    const { messages, messageId, threadId, model } = await req.json() as {
+        messages: Array<CoreMessage> | Array<Omit<Message, 'id'>>;
+        messageId: string;
+        threadId: string;
+        model: string;
+    }
     try {
-        const { messages, messageId, threadId, model } = await req.json() as {
-            messages: Array<CoreMessage> | Array<Omit<Message, 'id'>>;
-            messageId: string;
-            threadId: string;
-            model: string;
-        }
         const start = performance.now();
         const headers = await getHeaders()
         const session = await auth.api.getSession({
@@ -35,6 +38,16 @@ export async function POST(req: Request) {
         if (!session || !jwt) {
             return new NextResponse("no auth", { status: 403 });
         }
+
+        phNode.capture({
+            distinctId: session.user.id,
+            event: "chat-generate",
+            properties: {
+                threadId,
+                prompt: messages[messages.length - 1],
+                model
+            }
+        })
 
         convex.clearAuth();
         convex.setAuth(jwt.value);
@@ -56,6 +69,7 @@ export async function POST(req: Request) {
             messages,
             onError: async (error) => {
                 console.log('error', error);
+
                 await convex.mutation(api.messages.updateMessageContent, {
                     threadId,
                     content: "An error occured while generating a response",
@@ -65,6 +79,8 @@ export async function POST(req: Request) {
                     threadId,
                     isStreaming: false
                 });
+
+                await Sentry.captureException(error);
             },
             experimental_transform: [smoothStream({ chunking: 'word' })],
             onFinish: async (e) => {
@@ -111,7 +127,16 @@ export async function POST(req: Request) {
                 return ERROR_MSG;
             },
         });
-    } catch {
+    } catch (e) {
+        if (messageId && threadId) {
+            after(
+                () => convex.mutation(api.messages.updateMessageContent, {
+                    threadId,
+                    content: ERROR_MSG,
+                    messageId
+                }))
+        }
+        await Sentry.captureException(e);
         return new NextResponse(
             JSON.stringify({
                 error: "internal server error"
@@ -121,5 +146,4 @@ export async function POST(req: Request) {
             }
         )
     }
-
 }

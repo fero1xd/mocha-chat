@@ -1,13 +1,29 @@
 import { Button } from "../ui/button";
-import { Copy, RefreshCcw } from "lucide-react";
+import { Check, Copy, RefreshCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 type Props = {
   role: "user" | "assistant";
+  content: string;
 };
 
-export function ChatAction({ role }: Props) {
+export function ChatAction({ role, content }: Props) {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopied(true);
+      setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to copy code to clipboard:", error);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -17,18 +33,22 @@ export function ChatAction({ role }: Props) {
         role === "assistant" ? "left-0" : "right-0"
       )}
     >
-      <Tooltip>
+      {/* <Tooltip>
         <TooltipTrigger asChild>
           <Button size="icon" variant="ghost">
             <RefreshCcw className="size-4" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom">Retry message</TooltipContent>
-      </Tooltip>
+      </Tooltip> */}
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button size="icon" variant="ghost">
-            <Copy className="size-4" />
+          <Button size="icon" variant="ghost" onClick={copyToClipboard}>
+            {copied ? (
+              <Check className="size-4" />
+            ) : (
+              <Copy className="size-4" />
+            )}
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom">Copy message</TooltipContent>

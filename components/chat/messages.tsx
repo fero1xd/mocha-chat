@@ -8,7 +8,7 @@ import { Message } from "./message";
 export function Messages({ scrollToBottom }: { scrollToBottom: () => void }) {
   const { threadId } = useParams() as { threadId: string };
 
-  const { data: messages, isPending } = useQuery(
+  const { data: messages } = useQuery(
     convexQuery(api.messages.getThreadMessages, {
       threadId,
     })

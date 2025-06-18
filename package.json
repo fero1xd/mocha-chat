@@ -22,6 +22,8 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@sentry/node": "^9.30.0",
+    "@sentry/react": "^9.30.0",
     "@tanstack/react-query": "^5.80.7",
     "@tanstack/react-query-devtools": "^5.0.0-alpha.91",
     "ai": "^4.3.16",
@@ -41,6 +43,8 @@
     "marked": "^15.0.12",
     "nanoid": "^5.1.5",
     "next": "15.4.0-canary.78",
+    "posthog-js": "^1.255.0",
+    "posthog-node": "^5.1.1",
     "react": "19.1.0",
     "react-cookie": "^8.0.1",
     "react-dom": "19.1.0",
@@ -74,5 +78,10 @@
     "tsx": "^4.20.2",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"
-  }
+  },
+  "trustedDependencies": [
+    "@tailwindcss/oxide",
+    "core-js",
+    "unrs-resolver"
+  ]
 }

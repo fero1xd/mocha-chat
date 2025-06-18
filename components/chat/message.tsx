@@ -19,7 +19,7 @@ function RawMessage({ msg, isLast }: Props) {
       <div className="flex justify-end">
         <div className="group relative inline-block max-w-[80%] break-words rounded-xl border border-secondary/50 bg-secondary/50 px-4 py-3 text-left">
           <p>{msg.content}</p>
-          <ChatAction role="user" />
+          <ChatAction role="user" content={msg.content} />
         </div>
       </div>
     );
@@ -40,7 +40,7 @@ function RawMessage({ msg, isLast }: Props) {
         ) : null}
         <MemoizedMarkdown content={msg.content} id={msg.id} />
 
-        <ChatAction role="assistant" />
+        <ChatAction role="assistant" content={msg.content} />
       </div>
     </div>
   );
@@ -49,7 +49,13 @@ function RawMessage({ msg, isLast }: Props) {
 function LocalAssistantMessage({ msg, isLast }: Props) {
   const localMsgs = useCurrentGeneration((s) => s.messages);
   const localContent = localMsgs.find((c) => c.id === msg.id);
-  const doneStreaming = localContent?.isDone && !localContent.error;
+  if (!localContent) return <></>;
+
+  const { isDone, text, reasoning, error } = localContent;
+
+  const successfulyDone = isDone && !error && !text;
+
+  const hasAnything = error || text || reasoning;
 
   return (
     <div
@@ -59,15 +65,15 @@ function LocalAssistantMessage({ msg, isLast }: Props) {
       )}
     >
       <div className="group relative w-full max-w-full break-words">
-        {!localContent?.text && !localContent?.error && <MessageLoading />}
-        {msg.reasoning ? (
-          <Reasoning id={msg.id} reasoning={msg.reasoning} />
-        ) : null}
+        {!hasAnything && !isDone && <MessageLoading />}
+        {reasoning ? <Reasoning id={msg.id} reasoning={reasoning} /> : null}
         <MemoizedMarkdown
           content={localContent ? localContent.text : msg.content}
           id={msg.id}
         />
-        {doneStreaming ? <ChatAction role="assistant" /> : null}
+        {successfulyDone ? (
+          <ChatAction role="assistant" content={localContent.text} />
+        ) : null}
         {localContent?.error ? <Error message={localContent.error} /> : null}
       </div>
     </div>

@@ -40,6 +40,13 @@ export async function generateStream({ messages, messageId, threadId }: Args) {
         });
 
         if (!res.ok) {
+            useCurrentGeneration.setState(prev => {
+                prev.messages[index].error = "An error occured while generating a response";
+                prev.messages[index].isDone = true;
+                return {
+                    messages: [...prev.messages]
+                }
+            })
             return;
         }
 
