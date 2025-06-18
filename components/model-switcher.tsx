@@ -32,7 +32,7 @@ export function ModelSwitcher() {
         <Command defaultValue={model}>
           <CommandInput placeholder="Search models..." className="h-9" />
 
-          <div className="py-2 px-4">
+          {/* <div className="py-2 px-4">
             <Card className="w-full bg-secondary">
               <CardHeader>
                 <CardTitle>Unlock all models + higher limits</CardTitle>
@@ -47,7 +47,7 @@ export function ModelSwitcher() {
                 <Button>Upgrade Now</Button>
               </CardContent>
             </Card>
-          </div>
+          </div> */}
 
           <CommandList>
             <CommandEmpty>No framework found.</CommandEmpty>

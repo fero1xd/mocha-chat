@@ -15,6 +15,7 @@ import { Button } from "./ui/button";
 import { AuthState } from "./sidebar-auth-state";
 import { Threads } from "./threads";
 import { Link } from "react-router";
+import { ThreadsSearch } from "./threads-search";
 
 export function AppSidebar() {
   return (
@@ -43,12 +44,8 @@ export function AppSidebar() {
               <Label htmlFor="search" className="sr-only">
                 Search
               </Label>
-              <SidebarInput
-                id="search"
-                placeholder="Search your threads..."
-                className="pl-8"
-              />
-              <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 opacity-50 select-none" />
+
+              <ThreadsSearch />
             </SidebarGroupContent>
           </SidebarGroup>
         </form>

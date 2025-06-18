@@ -12,6 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "./ui/sidebar";
+import { useThreadsSearch } from "@/stores/use-thread-search";
 
 export function Threads() {
   const threads = useThreads();
@@ -45,6 +46,44 @@ export function Threads() {
       }),
     };
   }, [threads]);
+
+  const threadSearch = useThreadsSearch((s) => s.search);
+  const filteredThreads = useMemo(() => {
+    return threads.filter((th) =>
+      th.title.toLocaleLowerCase().includes(threadSearch)
+    );
+  }, [threadSearch, threads]);
+
+  if (threadSearch.trim().length > 0) {
+    return (
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Search</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filteredThreads.map(({ id, title, isStreaming }) => (
+                <SidebarMenuItem key={id} className="overflow-hidden">
+                  <SidebarMenuButton
+                    asChild
+                    isActive={selectedThread?.id === id}
+                  >
+                    <Link to={`/${id}`} className="">
+                      <span>{title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                  {isStreaming ? (
+                    <SidebarMenuAction className="transition-opacity duration-75 ease-in-out z-20 gap-2">
+                      <Loader2 className="animate-spin" />
+                    </SidebarMenuAction>
+                  ) : null}
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    );
+  }
 
   return (
     <SidebarContent>
