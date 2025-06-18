@@ -1,4 +1,4 @@
-const url = "https://t3-chat-4iktnk57v-pranjalfxd.vercel.app";
+const url = "https://t3-chat-khaki.vercel.app";
 export default {
     providers: [
         {
