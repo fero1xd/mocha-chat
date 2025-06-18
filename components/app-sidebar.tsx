@@ -14,7 +14,7 @@ import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { AuthState } from "./sidebar-auth-state";
 import { Threads } from "./threads";
-import { Link } from "./ui/better-link";
+import { Link } from "react-router";
 
 export function AppSidebar() {
   return (

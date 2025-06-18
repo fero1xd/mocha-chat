@@ -42,7 +42,7 @@
   --sidebar-ring: oklch(0.618 0.0778 65.5444);
   --font-sans: var(--font-libre-baskerville), serif;
   --font-serif: var(--font-lora), serif;
-  --font-mono: var(--font-ibm-mono), monospace;
+  --font-mono: var(--font-geist-mono), monospace;
   --radius: 0.25rem;
   --shadow-2xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
   --shadow-xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
@@ -99,7 +99,7 @@
   --sidebar-ring: oklch(0.7264 0.0581 66.6967);
   --font-sans: var(--font-libre-baskerville), serif;
   --font-serif: var(--font-lora), serif;
-  --font-mono: var(--font-ibm-mono), monospace;
+  --font-mono: var(--font-geist-mono), monospace;
   --radius: 0.35rem;
   --shadow-2xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
   --shadow-xs: 2px 3px 5px 0px hsl(28 13% 20% / 0.06);
@@ -185,4 +185,10 @@
     letter-spacing: var(--tracking-normal);
     scroll-behavior: smooth;
   }
+}
+
+.shiki {
+  border-radius: 0.5rem !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
 }

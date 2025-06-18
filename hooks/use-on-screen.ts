@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useMemo, useState } from "react"
 
 export function useOnScreen(ref: RefObject<HTMLDivElement | null>) {
-    const [isIntersecting, setIntersecting] = useState(false)
+    const [isIntersecting, setIntersecting] = useState(true)
 
     const observer = useMemo(() => new IntersectionObserver(
         ([entry]) => setIntersecting(entry.isIntersecting)

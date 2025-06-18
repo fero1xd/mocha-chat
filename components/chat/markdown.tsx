@@ -4,10 +4,20 @@ import type { ComponentProps } from "react";
 import { memo, useMemo, useState } from "react";
 import type { ExtraProps } from "react-markdown";
 import ReactMarkdown, { type Components } from "react-markdown";
-import ShikiHighlighter from "react-shiki";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+
+import ShikiHighlighter, {
+  createHighlighterCore,
+  createOnigurumaEngine,
+} from "react-shiki/core";
+
+const highlighter = await createHighlighterCore({
+  themes: [import("@shikijs/themes/kanagawa-dragon")],
+  langs: [import("@shikijs/langs/typescript")],
+  engine: createOnigurumaEngine(import("shiki/wasm")),
+});
 
 type CodeComponentProps = ComponentProps<"code"> & ExtraProps;
 type MarkdownSize = "default" | "small";
@@ -23,13 +33,18 @@ function CodeBlock({ children, className, ...props }: CodeComponentProps) {
   if (match) {
     const lang = match[1];
     return (
-      <div className="rounded-none">
+      <div className="rounded-none py-4">
         <Codebar lang={lang} codeString={String(children)} />
         <ShikiHighlighter
-          language={lang}
+          highlighter={highlighter}
+          language="typescript"
           theme={"kanagawa-dragon"}
           className="text-sm font-mono rounded-full"
           showLanguage={false}
+          // language={lang}
+          // theme={"kanagawa-dragon"}
+          // className="text-sm font-mono rounded-full"
+          // showLanguage={false}
         >
           {String(children)}
         </ShikiHighlighter>
@@ -38,7 +53,7 @@ function CodeBlock({ children, className, ...props }: CodeComponentProps) {
   }
 
   const inlineCodeClasses =
-    "mx-0.5 overflow-auto rounded-md bg-secondary/50 px-2 py-1 group-[:is(pre)]:flex group-[:is(pre)]:w-full";
+    "mx-0.5 overflow-auto rounded-md bg-secondary/50 px-2 py-1 group-[:is(pre)]:flex group-[:is(pre)]:w-full font-mono font-medium";
 
   return (
     <code className={inlineCodeClasses} {...props}>

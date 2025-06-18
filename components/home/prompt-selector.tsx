@@ -39,7 +39,7 @@ export function PromptSelector({ onSelect }: Props) {
   const [selectedTab, setSelectedTab] = useState<Prompts>("create");
   return (
     <>
-      <div className="flex flex-row flex-wrap gap-2.5 text-sm max-sm:justify-evenly">
+      <div className="flex flex-row flex-wrap gap-2.5 text-sm max-sm:justify-start">
         <Button
           className="rounded-full outline-1 outline-secondary/7  font-semibold"
           variant={selectedTab === "create" ? "default" : "secondary"}
@@ -79,15 +79,15 @@ export function PromptSelector({ onSelect }: Props) {
           <div>Learn</div>
         </Button>
       </div>
-      <div className="flex flex-col text-foreground">
+      <div className="flex flex-col text-foreground max-w-full overflow-x-auto">
         {DEFAULT_PROMPTS[selectedTab].map((prompt) => (
           <div
-            className="flex items-start gap-2 border-t border-secondary/40 py-1 first:border-none"
+            className="flex items-start gap-2 border-t border-secondary/40 py-1 first:border-none "
             key={prompt}
           >
             <Button
               onClick={() => onSelect(prompt)}
-              className="w-full rounded-md py-2 justify-start text-secondary-foreground hover:bg-secondary/50 sm:px-3"
+              className="rounded-md py-2 justify-start text-secondary-foreground hover:bg-secondary/50 text-left w-full"
               variant={"ghost"}
               size="lg"
             >

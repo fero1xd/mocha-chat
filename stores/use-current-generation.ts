@@ -7,6 +7,8 @@ type Messages = {
     id: string;
     text: string;
     reasoning?: string;
+    isDone: boolean;
+    error?: string;
 }[];
 
 export const useCurrentGeneration = create(

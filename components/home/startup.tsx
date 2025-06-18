@@ -14,7 +14,7 @@ export function Startup({ onSelect }: Props) {
         <div className="flex h-[calc(100vh-20rem)] items-start justify-center">
           <div className="w-full space-y-6 px-2 pt-[calc(max(15vh,2.5rem))] duration-300 animate-in fade-in-50 zoom-in-95 sm:px-8">
             <h2 className="text-3xl font-semibold">
-              How can I help you, {user?.name}?
+              How can I help you{user?.name ? `, ${user.name}` : ""}?
             </h2>
 
             <PromptSelector onSelect={onSelect} />

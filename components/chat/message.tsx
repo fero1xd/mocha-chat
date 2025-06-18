@@ -4,13 +4,16 @@ import { ChatAction } from "./chat-action";
 import MemoizedMarkdown from "./markdown";
 import Reasoning from "./reasoning";
 import { memo } from "react";
+import { cn } from "@/lib/utils";
+import { MessageLoading } from "./loading";
+import { Error } from "./error";
 
 type Props = {
   msg: Doc<"messages">;
-  isStreaming: boolean;
+  isLast: boolean;
 };
 
-function RawMessage({ msg, isStreaming }: Props) {
+function RawMessage({ msg, isLast }: Props) {
   if (msg.role === "user") {
     return (
       <div className="flex justify-end">
@@ -22,28 +25,41 @@ function RawMessage({ msg, isStreaming }: Props) {
     );
   }
 
-  if (!msg.content) return <LocalAssistantMessage msg={msg} />;
+  if (!msg.content) return <LocalAssistantMessage msg={msg} isLast={isLast} />;
 
   return (
-    <div className="flex justify-start">
+    <div
+      className={cn(
+        "flex justify-start",
+        isLast ? "min-h-[calc(100vh-24rem)]" : null
+      )}
+    >
       <div className="group relative w-full max-w-full break-words">
         {msg.reasoning ? (
           <Reasoning id={msg.id} reasoning={msg.reasoning} />
         ) : null}
         <MemoizedMarkdown content={msg.content} id={msg.id} />
 
-        {<ChatAction role="assistant" />}
+        <ChatAction role="assistant" />
       </div>
     </div>
   );
 }
 
-function LocalAssistantMessage({ msg }: { msg: Doc<"messages"> }) {
+function LocalAssistantMessage({ msg, isLast }: Props) {
   const localMsgs = useCurrentGeneration((s) => s.messages);
   const localContent = localMsgs.find((c) => c.id === msg.id);
+  const doneStreaming = localContent?.isDone && !localContent.error;
+
   return (
-    <div className="flex justify-start">
+    <div
+      className={cn(
+        "flex justify-start",
+        isLast ? "min-h-[calc(100vh-24rem)]" : null
+      )}
+    >
       <div className="group relative w-full max-w-full break-words">
+        {!localContent?.text && !localContent?.error && <MessageLoading />}
         {msg.reasoning ? (
           <Reasoning id={msg.id} reasoning={msg.reasoning} />
         ) : null}
@@ -51,15 +67,16 @@ function LocalAssistantMessage({ msg }: { msg: Doc<"messages"> }) {
           content={localContent ? localContent.text : msg.content}
           id={msg.id}
         />
-        {<ChatAction role="assistant" />}
+        {doneStreaming ? <ChatAction role="assistant" /> : null}
+        {localContent?.error ? <Error message={localContent.error} /> : null}
       </div>
     </div>
   );
 }
 
 export const Message = memo(RawMessage, (prev, next) => {
-  if (prev.isStreaming !== next.isStreaming) return false;
   if (prev.msg.id !== next.msg.id) return false;
   if (prev.msg.content !== next.msg.content) return false;
+  if (prev.isLast !== next.isLast) return false;
   return true;
 });

@@ -1,20 +1,25 @@
+import { createRef } from 'react'
 import { create } from 'zustand'
 import { combine, persist } from 'zustand/middleware'
 
 export const useChatbox = create(
     persist(
-
         combine(
             {
-                // inputRef: createRef<HTMLTextAreaElement>()
+                inputRef: createRef<HTMLTextAreaElement>(),
                 prompt: ""
             },
             (set) => ({
-                setPrompt: (prompt: string) => set({ prompt })
+                setPrompt: (prompt: string) => set({ prompt }),
             })
         ),
         {
             name: "user-prompt-storage",
+            partialize(state) {
+                return {
+                    prompt: state.prompt
+                }
+            },
         }
     )
 )

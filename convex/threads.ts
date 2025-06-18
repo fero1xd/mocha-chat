@@ -20,7 +20,7 @@ export const createThread = userMutation({
     },
     handler: async (ctx, args) => {
         const { user } = ctx;
-        await ctx.db.insert("threads", {
+        return await ctx.db.insert("threads", {
             ...args,
             userId: user.subject,
             isStreaming: false,

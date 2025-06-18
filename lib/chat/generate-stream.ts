@@ -19,6 +19,7 @@ export async function generateStream({ messages, messageId, threadId }: Args) {
                     {
                         id: messageId,
                         text: "",
+                        isDone: false,
                     }
                 ]
             }
@@ -44,6 +45,7 @@ export async function generateStream({ messages, messageId, threadId }: Args) {
 
         let text = "";
         let reasoning = "";
+        let error = '';
 
         processDataStream({
             stream: res.body!,
@@ -65,6 +67,24 @@ export async function generateStream({ messages, messageId, threadId }: Args) {
                     }
                 })
             },
+            onFinishMessagePart: (part) => {
+                console.log({ finish: part });
+                useCurrentGeneration.setState(prev => {
+                    prev.messages[index].isDone = true;
+                    return {
+                        messages: [...prev.messages]
+                    }
+                })
+            },
+            onErrorPart: (ep) => {
+                error += ep;
+                useCurrentGeneration.setState(prev => {
+                    prev.messages[index].error = error;
+                    return {
+                        messages: [...prev.messages]
+                    }
+                })
+            }
         })
 
     } catch (e) {

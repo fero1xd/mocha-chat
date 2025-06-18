@@ -1,8 +1,7 @@
-import { Link } from "@/components/ui/better-link";
 import { useThreads } from "@/hooks/use-threads";
 import { Loader2 } from "lucide-react";
 import { useMemo } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import {
   SidebarContent,
   SidebarGroup,

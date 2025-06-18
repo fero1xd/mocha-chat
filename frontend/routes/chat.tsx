@@ -9,18 +9,21 @@ export function ChatPage() {
 
   return (
     <>
-      <div className="p-4 pt-0 flex h-full w-full flex-col overflow-y-scroll pb-[30px] relative">
-        <Topbar />
-
+      <Topbar />
+      <div className="p-4 pt-0 flex h-full w-full flex-col pb-[30px] overflow-y-auto">
         <div className="flex-1 pt-12 max-sm:pt-14 pb-[122px]">
-          <Messages />
-          <div ref={bottomRef}></div>
+          <Messages
+            scrollToBottom={() => {
+              bottomRef.current?.scrollIntoView({ behavior: "instant" });
+              bottomRef.current?.classList.remove("min-h-[calc(100vh-20rem)]");
+            }}
+          />
+          <div ref={bottomRef} className="min-h-[calc(100vh-20rem)]"></div>
         </div>
-
-        <ScrollToBottom ref={bottomRef} />
       </div>
 
       <div className="pointer-events-none z-10 absolute bottom-0 w-full px-2">
+        <ScrollToBottom ref={bottomRef} />
         <ChatInput />
       </div>
     </>

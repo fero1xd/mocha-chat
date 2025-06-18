@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { Libre_Baskerville, IBM_Plex_Mono, Lora } from "next/font/google";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import type { Metadata } from "next";
+import { Geist_Mono, Libre_Baskerville, Lora } from "next/font/google";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Mocha Chat",
@@ -15,9 +15,9 @@ const libre = Libre_Baskerville({
   subsets: ["latin"],
 });
 
-const mono = IBM_Plex_Mono({
-  weight: ["100", "200", "300", "400", "500", "600", "700"],
-  variable: "--font-ibm-mono",
+const mono = Geist_Mono({
+  weight: ["500"],
+  variable: "--font-geist-mono",
   display: "swap",
   subsets: ["latin"],
 });
@@ -36,9 +36,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
+      {/* <head>
         <script src="https://unpkg.com/react-scan/dist/auto.global.js" />
-      </head>
+      </head> */}
       <body
         className={`${libre.variable} ${mono.variable} ${serif.variable} antialiased dark font-sans`}
       >

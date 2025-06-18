@@ -9,7 +9,7 @@ function Textarea({
   ...props
 }: React.ComponentProps<"textarea"> & { maxRows: number }) {
   return (
-    // @ts-expect-error
+    // @ts-expect-error types are fked
     <AutoResize
       maxRows={maxRows}
       data-slot="textarea"

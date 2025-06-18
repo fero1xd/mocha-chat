@@ -1,10 +1,11 @@
 import { api } from "@/convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { Message } from "./message";
 
-export function Messages() {
+export function Messages({ scrollToBottom }: { scrollToBottom: () => void }) {
   const { threadId } = useParams() as { threadId: string };
 
   const { data: messages, isPending } = useQuery(
@@ -13,32 +14,43 @@ export function Messages() {
     })
   );
 
-  // const { messages, status, error } = useChat({
-  //   id: threadId,
-  //   initialMessages:
-  //     convexMessages?.map((message) => ({
-  //       id: message._id,
-  //       role: message.role,
-  //       parts: message.parts,
-  //       content: message.content || "",
-  //       createdAt: new Date(message._creationTime),
-  //     })) ?? [],
-  //   experimental_throttle: 50,
-  // });
+  const isFirstRender = useRef(true);
+  const [initialMessageLength, setIniLength] = useState<number | null>(null);
 
-  if (isPending) return null;
+  useEffect(() => {
+    if (!messages?.length) return;
+
+    if (initialMessageLength === null) {
+      setIniLength(messages.length);
+      return;
+    }
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      scrollToBottom();
+    }
+
+    const isWaitingForAssistant =
+      messages[messages.length - 1].role === "assistant" &&
+      messages[messages.length - 1].content === "";
+
+    if (isWaitingForAssistant) {
+      scrollToBottom();
+    }
+  }, [messages, scrollToBottom, initialMessageLength]);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pb-20 pt-safe-offset-10 overflow-hidden">
-      {messages?.map((msg) => (
+      {messages?.map((msg, index) => (
         <Message
           key={msg.id}
-          isStreaming={msg.role === "assistant" && !msg.content}
           msg={msg}
+          isLast={
+            initialMessageLength !== messages.length &&
+            messages.length - 1 === index
+          }
         />
       ))}
-      {/* {status === "submitted" ? <MessageLoading /> : null} */}
-      {/* {error ? <Error message={error.message} /> : null} */}
     </div>
   );
 }

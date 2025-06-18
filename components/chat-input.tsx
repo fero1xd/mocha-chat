@@ -10,6 +10,8 @@ import { useNavigate, useParams } from "react-router";
 import { ModelSwitcher } from "./model-switcher";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
+import { Id } from "@/convex/_generated/dataModel";
+import { useModals } from "@/stores/use-modals";
 
 export function ChatInput() {
   const { threadId } = useParams();
@@ -17,40 +19,46 @@ export function ChatInput() {
   const convex = useConvex();
 
   const { realUser } = useUser();
+  const setAuthModal = useModals((s) => s.setAuth);
 
   const addMessageMutation = useMutation({
-    mutationFn: useConvexMutation(api.messages.addMessagesToThread),
-    // .withOptimisticUpdate((localStore, args) => {
-    //   const existingThreadMessages = localStore.getQuery(
-    //     api.messages.getThreadMessages,
-    //     {
-    //       threadId: args.threadId,
-    //     }
-    //   );
+    mutationFn: useConvexMutation(
+      api.messages.addMessagesToThread
+    ).withOptimisticUpdate((localStore, args) => {
+      if (!realUser) return;
+      const existingThreadMessages = localStore.getQuery(
+        api.messages.getThreadMessages,
+        {
+          threadId: args.threadId,
+        }
+      );
 
-    //   if (existingThreadMessages && realUser) {
-    //     const newMsg = {
-    //       _id: crypto.randomUUID() as Id<"messages">,
-    //       _creationTime: Date.now(),
-    //       userId: realUser.id,
-    //       ...args,
-    //     };
-    //     console.log("adding local message", { newMsg });
-    //     localStore.setQuery(
-    //       api.messages.getThreadMessages,
-    //       {
-    //         threadId: args.threadId,
-    //       },
-    //       [...existingThreadMessages, newMsg]
-    //     );
-    //   }
-    // }),
+      localStore.setQuery(
+        api.messages.getThreadMessages,
+        {
+          threadId: args.threadId,
+        },
+        [
+          ...(existingThreadMessages ?? []),
+          ...args.messages.map((msg) => ({
+            _id: crypto.randomUUID() as Id<"messages">,
+            _creationTime: Date.now(),
+            threadId: args.threadId,
+            ...msg,
+          })),
+        ]
+      );
+    }),
   });
 
   const onSubmit = async () => {
     // we save re renders this way
     const { prompt, setPrompt } = useChatbox.getState();
-    if (!prompt || !realUser) return;
+    if (!prompt) return;
+    if (!realUser) {
+      setAuthModal(true);
+      return;
+    }
 
     const threadIdToUse = threadId || nanoid();
     if (!threadId) {
@@ -69,9 +77,13 @@ export function ChatInput() {
         role: "user" as const,
       };
 
-      const chatHistory = await convex.query(api.messages.getThreadMessages, {
-        threadId: threadIdToUse,
-      });
+      const isNewThread = threadId !== threadIdToUse;
+
+      const chatHistory = isNewThread
+        ? []
+        : await convex.query(api.messages.getThreadMessages, {
+            threadId: threadIdToUse,
+          });
 
       await addMessageMutation.mutateAsync({
         threadId: threadIdToUse,
@@ -125,7 +137,7 @@ export function ChatInput() {
 }
 
 function InputBox({ onSubmit }: { onSubmit: () => unknown }) {
-  const { prompt, setPrompt } = useChatbox();
+  const { prompt, setPrompt, inputRef } = useChatbox();
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -140,6 +152,7 @@ function InputBox({ onSubmit }: { onSubmit: () => unknown }) {
       onChange={(e) => setPrompt(e.target.value)}
       onKeyDown={handleKeyDown}
       maxRows={9}
+      ref={inputRef}
       placeholder="Type your message here."
       className="resize-none border-none rounded-b-none focus-visible:outline-none focus-visible:ring-0 dark:bg-transparent"
     />

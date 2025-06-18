@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { Doc } from "./_generated/dataModel";
 import { userMutation, userQuery } from "./helpers";
 import { roleValidator } from "./schema";
+import { api } from "./_generated/api";
 
 export const getThreadMessages = userQuery({
     args: {
@@ -31,9 +32,14 @@ export const addMessagesToThread = userMutation({
         // Check if this user is allowed to add a message to this thread
         const thread = await ctx.db.query("threads").
             withIndex("by_thread_user_id", (q) => q.eq("id", args.threadId).eq("userId", ctx.user.subject)).unique();
+        let threadId = thread?._id;
 
         if (!thread) {
-            throw new Error("no thread found");
+            threadId = await ctx.runMutation(api.threads.createThread, {
+                id: args.threadId,
+                title: "New Thread",
+                lastMessageAt: Date.now()
+            })
         }
 
         for (const message of args.messages) {
@@ -44,7 +50,7 @@ export const addMessagesToThread = userMutation({
         }
 
         const lastMessageAt = Date.now();
-        await ctx.db.patch(thread._id, {
+        await ctx.db.patch(threadId!, {
             lastMessageAt
         })
     }
