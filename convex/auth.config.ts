@@ -1,10 +1,11 @@
+const url = "https://t3-chat-khaki.vercel.app";
 export default {
     providers: [
         {
             type: "customJwt",
-            applicationId: `https://${process.env.VERCEL_URL_FOR_CONVEX}`,
-            issuer: `https://${process.env.VERCEL_URL_FOR_CONVEX}`,
-            jwks: `https://${process.env.VERCEL_URL_FOR_CONVEX}`,
+            applicationId: url,
+            issuer: url,
+            jwks: url,
             algorithm: "RS256",
         },
     ],
