@@ -22,6 +22,12 @@ export function useThreads() {
     }
   }, [threadsFromConvex]);
 
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      localStorage.removeItem(LOCAL_KEY);
+    }
+  }, [isLoading, isAuthenticated]);
+
   if (isLoading || isAuthenticated) {
     return threadsFromConvex ?? threadsFromLocal ?? [];
   }

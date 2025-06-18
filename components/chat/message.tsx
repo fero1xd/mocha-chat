@@ -53,7 +53,7 @@ function LocalAssistantMessage({ msg, isLast }: Props) {
 
   const { isDone, text, reasoning, error } = localContent;
 
-  const successfulyDone = isDone && !error && !text;
+  const successfulyDone = isDone && !error && text;
 
   const hasAnything = error || text || reasoning;
 
