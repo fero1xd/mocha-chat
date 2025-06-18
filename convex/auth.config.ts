@@ -1,4 +1,4 @@
-const url = "https://t3-chat-khaki.vercel.app";
+const url = "https://mocha.fairmine.live";
 export default {
     providers: [
         {

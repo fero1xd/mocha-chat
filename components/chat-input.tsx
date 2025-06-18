@@ -20,7 +20,7 @@ export function ChatInput() {
   const navigate = useNavigate();
   const convex = useConvex();
 
-  const { realUser } = useUser();
+  const { realUser, isRealLoading } = useUser();
   const setAuthModal = useModals((s) => s.setAuth);
 
   const addMessageMutation = useMutation({
@@ -135,7 +135,7 @@ export function ChatInput() {
           <div className="flex items-center justify-between w-full">
             <ModelSwitcher />
             <SendButton
-              disabled={addMessageMutation.isPending}
+              disabled={addMessageMutation.isPending || isRealLoading}
               onClick={onSubmit}
             />
           </div>
