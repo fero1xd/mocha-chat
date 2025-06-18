@@ -4,17 +4,18 @@ import { createAuthClient } from "better-auth/react"
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
 export const authClient = createAuthClient({
-    baseURL: "http://localhost:3000",
+    baseURL: process.env.NEXT_PUBLIC_VERCEL_URL
 })
 
 export async function verifyJwt(jwt: string) {
+    const url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
     try {
         const JWKS = createRemoteJWKSet(
-            new URL('http://localhost:3000/api/auth/jwks')
+            new URL(url)
         )
         const { payload } = await jwtVerify<User>(jwt, JWKS, {
-            issuer: 'http://localhost:3000',
-            audience: 'http://localhost:3000',
+            issuer: url,
+            audience: url
         })
         return payload
     } catch (error) {

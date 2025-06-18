@@ -26,7 +26,7 @@ export const auth = betterAuth({
                 const sessionToken = cookies.find(c => c.startsWith(sessionTokenName));
                 const sessionValue = sessionToken?.slice(sessionTokenName.length + 1, sessionToken.indexOf(";"));
 
-                const { data, error } = await betterFetch<{ token: string }>("http://localhost:3000/api/auth/token", {
+                const { data, error } = await betterFetch<{ token: string }>(`https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/auth/token`, {
                     headers: {
                         Authorization: `Bearer ${sessionValue}`
                     }
