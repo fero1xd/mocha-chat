@@ -3,12 +3,13 @@ import { User } from "better-auth";
 import { createAuthClient } from "better-auth/react"
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
+const url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+
 export const authClient = createAuthClient({
-    baseURL: process.env.NEXT_PUBLIC_VERCEL_URL
+    baseURL: url
 })
 
 export async function verifyJwt(jwt: string) {
-    const url = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
     try {
         const JWKS = createRemoteJWKSet(
             new URL(url)
