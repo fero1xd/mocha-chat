@@ -1,32 +1,31 @@
 import { v } from "convex/values";
+import { Doc } from "./_generated/dataModel";
 import { userMutation, userQuery } from "./helpers";
-import { internalMutation } from "./_generated/server";
-import schema from "./schema";
+import { roleValidator } from "./schema";
 
 export const getThreadMessages = userQuery({
     args: {
         threadId: v.string()
     },
-    handler: (ctx, { threadId }) => {
-        return ctx.db.query("messages")
-            .withIndex("by_thread_user_id",
+    handler: async (ctx, { threadId }) => {
+        const thread = await ctx.db.query('threads').withIndex('by_thread_id', (q) => q.eq('id', threadId)).unique();
+        if (!thread || thread.userId !== ctx.user.subject) throw new Error('no thread found');
+
+        return await ctx.db.query("messages")
+            .withIndex("by_thread_id",
                 (q) => q.eq("threadId", threadId)
-                    .eq("userId", ctx.user.subject)
             ).collect();
     },
 })
 
-export const addMessageToThread = userMutation({
+export const addMessagesToThread = userMutation({
     args: {
         threadId: v.string(),
-        content: v.string(),
-        role: v.union(
-            v.literal("user"),
-            v.literal("assistant"),
-            v.literal("data"),
-            v.literal("system")
-        ),
-        parts: schema.tables.messages.validator.fields.parts,
+        messages: v.array(v.object({
+            id: v.string(),
+            content: v.string(),
+            role: roleValidator
+        }))
     },
     handler: async (ctx, args) => {
         // Check if this user is allowed to add a message to this thread
@@ -37,34 +36,37 @@ export const addMessageToThread = userMutation({
             throw new Error("no thread found");
         }
 
-        const lastMessageAt = Date.now();
-        await ctx.db.insert('messages', {
-            ...args,
-            userId: ctx.user.subject,
-            // parts: [{
-            //     type: "text",
-            //     text: args.content
-            // }]
-        })
+        for (const message of args.messages) {
+            await ctx.db.insert('messages', {
+                ...message,
+                threadId: args.threadId,
+            })
+        }
 
+        const lastMessageAt = Date.now();
         await ctx.db.patch(thread._id, {
             lastMessageAt
         })
     }
 })
 
-export const updateMessageContent = internalMutation({
+export const updateMessageContent = userMutation({
     args: {
-        messageId: v.id("messages"),
+        messageId: v.string(),
         threadId: v.string(),
-        userId: v.string(),
-        content: v.string()
+        content: v.string(),
+        reasoning: v.optional(v.string())
     },
-    handler: async (ctx, { messageId, threadId, userId }) => {
+    handler: async (ctx, { messageId, threadId, content, reasoning }) => {
         const message = await ctx.db.query("messages")
-            .withIndex("by_id", (q) => q.eq("_id", messageId))
+            .withIndex("by_message_id", (q) => q.eq("id", messageId))
             .unique()
 
         if (!message) throw new Error("message not found")
+
+        const update: Partial<Doc<"messages">> = { content }
+        if (reasoning) { update.reasoning = reasoning }
+
+        await ctx.db.patch(message._id, update);
     }
 })

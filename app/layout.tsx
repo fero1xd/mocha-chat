@@ -12,18 +12,21 @@ const libre = Libre_Baskerville({
   weight: ["400", "700"],
   variable: "--font-libre-baskerville",
   display: "swap",
+  subsets: ["latin"],
 });
 
 const mono = IBM_Plex_Mono({
   weight: ["100", "200", "300", "400", "500", "600", "700"],
   variable: "--font-ibm-mono",
   display: "swap",
+  subsets: ["latin"],
 });
 
 const serif = Lora({
   weight: ["400", "500", "600", "700"],
   variable: "--font-lora",
   display: "swap",
+  subsets: ["cyrillic"],
 });
 
 export default function RootLayout({

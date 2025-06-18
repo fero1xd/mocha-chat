@@ -1,36 +1,25 @@
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import { useUser } from "@/hooks/use-jwt";
-import { createUserMessage } from "@/lib/chat/messages";
+import { generateStream } from "@/lib/chat/generate-stream";
 import { useChatbox } from "@/stores/chatbox";
-import { useModel } from "@/stores/model";
-import { useChat } from "@ai-sdk/react";
-import { useConvexMutation } from "@convex-dev/react-query";
+import { useConvex, useConvexMutation } from "@convex-dev/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { ArrowUp } from "lucide-react";
 import { nanoid } from "nanoid";
-import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import { ModelSwitcher } from "./model-switcher";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 
-function memoizeStatusAndAppend(threadId?: string) {
-  const { status, append } = useChat({
-    id: threadId,
-  });
-  return useMemo(() => ({ status, append }), [status, append, threadId]);
-}
-
 export function ChatInput() {
   const { threadId } = useParams();
   const navigate = useNavigate();
-  const { status, append } = memoizeStatusAndAppend(threadId);
+  const convex = useConvex();
 
   const { realUser } = useUser();
 
   const addMessageMutation = useMutation({
-    mutationFn: useConvexMutation(api.messages.addMessageToThread),
+    mutationFn: useConvexMutation(api.messages.addMessagesToThread),
     // .withOptimisticUpdate((localStore, args) => {
     //   const existingThreadMessages = localStore.getQuery(
     //     api.messages.getThreadMessages,
@@ -61,7 +50,6 @@ export function ChatInput() {
   const onSubmit = async () => {
     // we save re renders this way
     const { prompt, setPrompt } = useChatbox.getState();
-    const { model } = useModel.getState();
     if (!prompt || !realUser) return;
 
     const threadIdToUse = threadId || nanoid();
@@ -69,29 +57,46 @@ export function ChatInput() {
       navigate(`/${threadIdToUse}`);
     }
 
-    const userMsg = createUserMessage(prompt);
-    const { content, role, parts } = userMsg;
     const prevString = prompt;
 
     try {
       setPrompt("");
-      // 1. Creating user message in convex
+
+      const assistantMsgId = nanoid();
+      const userMessage = {
+        id: nanoid(),
+        content: prompt,
+        role: "user" as const,
+      };
+
+      const chatHistory = await convex.query(api.messages.getThreadMessages, {
+        threadId: threadIdToUse,
+      });
+
       await addMessageMutation.mutateAsync({
         threadId: threadIdToUse,
+        messages: [
+          userMessage,
+          {
+            id: assistantMsgId,
+            content: "",
+            role: "assistant",
+          },
+        ],
+      });
+
+      const historyToSend = chatHistory.map(({ content, role, id }) => ({
+        id,
         content,
         role,
-        parts,
-      });
+      }));
+      historyToSend.push(userMessage);
 
-      // 2. This will call /api/chat and start streaming back to the ui
-      append(userMsg, {
-        body: {
-          model,
-          threadId,
-        },
+      generateStream({
+        messages: historyToSend,
+        messageId: assistantMsgId,
+        threadId: threadIdToUse,
       });
-
-      // 3. nothing more to do, backend will automatically store the entire message in db
     } catch (e) {
       console.log(e);
       setPrompt(prevString);
@@ -109,11 +114,7 @@ export function ChatInput() {
           <div className="flex items-center justify-between w-full">
             <ModelSwitcher />
             <SendButton
-              disabled={
-                status === "streaming" ||
-                status === "submitted" ||
-                addMessageMutation.isPending
-              }
+              disabled={addMessageMutation.isPending}
               onClick={onSubmit}
             />
           </div>
