@@ -12,7 +12,7 @@ export const authClient = createAuthClient({
 export async function verifyJwt(jwt: string) {
     try {
         const JWKS = createRemoteJWKSet(
-            new URL(url)
+            new URL(`${url}/api/auth/jwks`)
         )
         const { payload } = await jwtVerify<User>(jwt, JWKS, {
             issuer: url,
