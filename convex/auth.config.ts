@@ -5,7 +5,7 @@ export default {
             type: "customJwt",
             applicationId: url,
             issuer: url,
-            jwks: url,
+            jwks: `${url}/api/auth/jwks`,
             algorithm: "RS256",
         },
     ],
