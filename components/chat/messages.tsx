@@ -37,7 +37,7 @@ export function Messages({ scrollToBottom }: { scrollToBottom: () => void }) {
     if (isWaitingForAssistant) {
       scrollToBottom();
     }
-  }, [messages, scrollToBottom, initialMessageLength]);
+  }, [messages, initialMessageLength]);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pb-20 pt-safe-offset-10 overflow-hidden">

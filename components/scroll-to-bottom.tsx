@@ -1,18 +1,16 @@
-import { RefObject } from "react";
-import { Button } from "./ui/button";
-import { ChevronDown } from "lucide-react";
-import { useOnScreen } from "@/hooks/use-on-screen";
-import { ClassValue } from "clsx";
 import { cn } from "@/lib/utils";
+import { ClassValue } from "clsx";
+import { ChevronDown } from "lucide-react";
+import { Button } from "./ui/button";
 
 type Props = {
-  ref: RefObject<HTMLDivElement | null>;
+  inView: boolean;
   className?: ClassValue;
+  scrollToBottom: () => void;
 };
 
-export function ScrollToBottom({ ref, className }: Props) {
-  const isVisible = useOnScreen(ref);
-  if (isVisible) {
+export function ScrollToBottom({ inView, className, scrollToBottom }: Props) {
+  if (inView) {
     return null;
   }
 
@@ -27,7 +25,7 @@ export function ScrollToBottom({ ref, className }: Props) {
         size="sm"
         variant="secondary"
         className="pointer-events-auto rounded-xl text-xs bg-background border hover:bg-sidebar"
-        onClick={() => ref.current?.scrollIntoView({ behavior: "instant" })}
+        onClick={scrollToBottom}
       >
         Scroll to bottom <ChevronDown />
       </Button>

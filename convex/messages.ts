@@ -3,20 +3,30 @@ import { Doc } from "./_generated/dataModel";
 import { userMutation, userQuery } from "./helpers";
 import { roleValidator } from "./schema";
 import { api } from "./_generated/api";
+import { internalQuery } from "./_generated/server";
 
 export const getThreadMessages = userQuery({
     args: {
         threadId: v.string()
     },
     handler: async (ctx, { threadId }) => {
-        const thread = await ctx.db.query('threads').withIndex('by_thread_id', (q) => q.eq('id', threadId)).unique();
-        if (!thread || thread.userId !== ctx.user.subject) throw new Error('no thread found');
+        const thread = await ctx.db.query('threads').withIndex('by_thread_user_id', (q) => q.eq('id', threadId).eq("userId", ctx.user.subject)).unique();
+        if (!thread) throw new Error('no thread found');
 
         return await ctx.db.query("messages")
             .withIndex("by_thread_id",
                 (q) => q.eq("threadId", threadId)
             ).collect();
     },
+})
+
+export const internalGetMessages = internalQuery({
+    args: {
+        threadId: v.string(),
+    },
+    handler: (ctx, { threadId }) => {
+        return ctx.db.query('messages').withIndex('by_thread_id', (q) => q.eq("threadId", threadId)).collect()
+    }
 })
 
 export const addMessagesToThread = userMutation({

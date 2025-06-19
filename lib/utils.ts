@@ -13,3 +13,6 @@ export function betterJsonParse<T>(raw?: string | null): T | null {
     return null;
   }
 }
+export function lowerCaseIncludes(term: string, key: string) {
+  return term.toLowerCase().includes(key);
+}

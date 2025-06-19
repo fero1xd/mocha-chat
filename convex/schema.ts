@@ -15,6 +15,7 @@ const schema = defineSchema({
         userId: v.string(),
         lastMessageAt: v.number(),
         isStreaming: v.boolean(),
+        pinned: v.optional(v.boolean())
     })
         .index("by_userId", ["userId"])
         .index("by_thread_user_id", ["id", "userId"])
