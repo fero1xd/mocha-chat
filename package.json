@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.19",
+    "@ai-sdk/openai": "^1.3.22",
     "@ai-sdk/react": "^1.2.12",
     "@better-auth-kit/convex": "^1.2.2",
     "@convex-dev/react-query": "^0.0.0-alpha.8",
@@ -26,6 +27,8 @@
     "@sentry/react": "^9.30.0",
     "@tanstack/react-query": "^5.80.7",
     "@tanstack/react-query-devtools": "^5.0.0-alpha.91",
+    "@upstash/ratelimit": "^2.0.5",
+    "@upstash/redis": "^1.35.0",
     "ai": "^4.3.16",
     "babel-plugin-react-compiler": "^19.1.0-rc.2",
     "better-auth": "^1.2.9",

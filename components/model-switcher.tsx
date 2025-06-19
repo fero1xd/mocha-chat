@@ -4,7 +4,6 @@ import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Gemini } from "./icons/gemini";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import {
   Command,
   CommandEmpty,
@@ -15,6 +14,7 @@ import {
 } from "./ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { useModel } from "@/stores/model";
+import OpenAI from "./icons/openai";
 
 export function ModelSwitcher() {
   const [open, setOpen] = useState(false);
@@ -32,25 +32,8 @@ export function ModelSwitcher() {
         <Command defaultValue={model}>
           <CommandInput placeholder="Search models..." className="h-9" />
 
-          {/* <div className="py-2 px-4">
-            <Card className="w-full bg-secondary">
-              <CardHeader>
-                <CardTitle>Unlock all models + higher limits</CardTitle>
-              </CardHeader>
-              <CardContent className="flex items-center justify-between w-full">
-                <h1 className="font-bold text-xl">
-                  <span className="text-primary text-2xl font-extrabold">
-                    $8
-                  </span>
-                  /month
-                </h1>
-                <Button>Upgrade Now</Button>
-              </CardContent>
-            </Card>
-          </div> */}
-
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No model found.</CommandEmpty>
             <CommandGroup>
               {MODELS.map((m) => (
                 <CommandItem
@@ -63,6 +46,7 @@ export function ModelSwitcher() {
                   className="py-4"
                 >
                   {m.toLowerCase().startsWith("gemini") ? <Gemini /> : null}
+                  {m.toLowerCase().startsWith("openai") ? <OpenAI /> : null}
                   {m}
                   <Check
                     className={cn(

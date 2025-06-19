@@ -10,6 +10,8 @@ import { CoreMessage, Message, smoothStream, streamText } from 'ai';
 import { cookies as getCookies, headers as getHeaders } from 'next/headers';
 import { after, NextResponse } from 'next/server';
 import { phNode } from './ph';
+import { ratelimit } from '@/lib/redis';
+import { RatelimitError } from './errors';
 
 
 // Allow streaming responses up to 30 seconds
@@ -52,6 +54,13 @@ export async function POST(req: Request) {
         convex.clearAuth();
         convex.setAuth(jwt.value);
 
+        if (process.env.NODE_ENV === 'production') {
+            const { success } = await ratelimit.limit(session.user.id);
+            if (!success) {
+                throw new RatelimitError();
+            }
+        }
+
         const modelConfig = MODELS_CONFIG[model];
         if (!modelConfig) {
             return new Response(null, { status: 400 });
@@ -69,7 +78,6 @@ export async function POST(req: Request) {
             messages,
             onError: async (error) => {
                 console.log('error', error);
-
                 await convex.mutation(api.messages.updateMessageContent, {
                     threadId,
                     content: "An error occured while generating a response",
@@ -84,7 +92,6 @@ export async function POST(req: Request) {
             },
             experimental_transform: [smoothStream({ chunking: 'word' })],
             onFinish: async (e) => {
-                console.log('onFinish', { text: e.text });
                 await convex.mutation(api.threads.updateThreadStreaming, {
                     threadId,
                     isStreaming: false
@@ -128,21 +135,22 @@ export async function POST(req: Request) {
             },
         });
     } catch (e) {
+        let emsg = e instanceof RatelimitError ? 'You are being rate limited' : ERROR_MSG;
         if (messageId && threadId) {
             after(
                 () => convex.mutation(api.messages.updateMessageContent, {
                     threadId,
-                    content: ERROR_MSG,
+                    content: emsg,
                     messageId
                 }))
         }
         await Sentry.captureException(e);
         return new NextResponse(
             JSON.stringify({
-                error: "internal server error"
+                error: emsg
             }),
             {
-                status: 500
+                status: e instanceof RatelimitError ? 429 : 500
             }
         )
     }
