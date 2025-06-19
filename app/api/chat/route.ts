@@ -130,12 +130,12 @@ export async function POST(req: Request) {
 
         return result.toDataStreamResponse({
             sendReasoning: true,
-            getErrorMessage(error) {
+            getErrorMessage() {
                 return ERROR_MSG;
             },
         });
     } catch (e) {
-        let emsg = e instanceof RatelimitError ? 'You are being rate limited' : ERROR_MSG;
+        const emsg = e instanceof RatelimitError ? 'You are being rate limited' : ERROR_MSG;
         if (messageId && threadId) {
             after(
                 () => convex.mutation(api.messages.updateMessageContent, {

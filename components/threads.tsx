@@ -71,7 +71,7 @@ export function Threads() {
       ["Yesterday", yesterday],
       ["Older", older],
     ] as const;
-  }, [today, yesterday, older]);
+  }, [today, yesterday, older, pinned]);
 
   return (
     <SidebarContent>

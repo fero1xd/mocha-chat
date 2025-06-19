@@ -1,8 +1,8 @@
-import { Button } from "../ui/button";
-import { Check, Copy, RefreshCcw } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { cn } from "@/lib/utils";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
+import { Button } from "../ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 type Props = {
   role: "user" | "assistant";

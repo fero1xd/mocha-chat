@@ -4,18 +4,17 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
-  SidebarInput,
   SidebarMenu,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Label } from "./ui/label";
-import { Coffee, Search } from "lucide-react";
-import { Separator } from "./ui/separator";
-import { Button } from "./ui/button";
+import { Coffee } from "lucide-react";
+import { Link } from "react-router";
 import { AuthState } from "./sidebar-auth-state";
 import { Threads } from "./threads";
-import { Link } from "react-router";
 import { ThreadsSearch } from "./threads-search";
+import { Button } from "./ui/button";
+import { Label } from "./ui/label";
+import { Separator } from "./ui/separator";
 
 export function AppSidebar() {
   return (
