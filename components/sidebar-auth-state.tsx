@@ -14,6 +14,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 import { Skeleton } from "./ui/skeleton";
 import Image from "next/image";
 import posthog from "posthog-js";
+import Cookies from "js-cookie";
 
 export function AuthState() {
   const [loading, setLoading] = useState(false);
@@ -105,7 +106,7 @@ export function AuthState() {
               className="cursor-pointer"
               onClick={() => {
                 localStorage.removeItem("threads");
-                localStorage.removeItem("jwt");
+                Cookies.remove("jwt");
                 authClient.signOut({
                   fetchOptions: {
                     onSuccess: () => {

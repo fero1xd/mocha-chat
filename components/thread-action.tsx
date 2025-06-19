@@ -8,10 +8,10 @@ import {
   CommandList,
 } from "./ui/command";
 import { Copy, Pin, PinOff, Trash } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
 import { useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@/convex/_generated/api";
 import { useNavigate } from "react-router";
+import { useAuthMutation } from "@/hooks/use-auth-mutation";
 
 export function ThreadActionMenu({
   threadId,
@@ -40,7 +40,7 @@ export function ThreadActionMenu({
     window.navigator.clipboard.writeText(title);
   };
 
-  const deleteThreadMutation = useMutation({
+  const deleteThreadMutation = useAuthMutation({
     mutationFn: useConvexMutation(
       api.threads.deleteThread
     ).withOptimisticUpdate((localStore, args) => {
@@ -52,7 +52,7 @@ export function ThreadActionMenu({
     }),
   });
 
-  const pinThreadMutation = useMutation({
+  const pinThreadMutation = useAuthMutation({
     mutationFn: useConvexMutation(
       api.threads.setThreadPin
     ).withOptimisticUpdate((localStore, args) => {

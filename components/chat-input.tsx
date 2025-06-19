@@ -1,19 +1,19 @@
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import { useAuthMutation } from "@/hooks/use-auth-mutation";
 import { useUser } from "@/hooks/use-jwt";
 import { generateStream } from "@/lib/chat/generate-stream";
 import { useChatbox } from "@/stores/chatbox";
+import { useModel } from "@/stores/model";
+import { useModals } from "@/stores/use-modals";
 import { useConvex, useConvexMutation } from "@convex-dev/react-query";
-import { useMutation } from "@tanstack/react-query";
 import { ArrowUp } from "lucide-react";
 import { nanoid } from "nanoid";
+import posthog from "posthog-js";
 import { useNavigate, useParams } from "react-router";
 import { ModelSwitcher } from "./model-switcher";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { Id } from "@/convex/_generated/dataModel";
-import { useModals } from "@/stores/use-modals";
-import posthog from "posthog-js";
-import { useModel } from "@/stores/model";
 
 export function ChatInput() {
   const { threadId } = useParams();
@@ -23,7 +23,7 @@ export function ChatInput() {
   const { realUser, isRealLoading } = useUser();
   const setAuthModal = useModals((s) => s.setAuth);
 
-  const addMessageMutation = useMutation({
+  const addMessageMutation = useAuthMutation({
     mutationFn: useConvexMutation(
       api.messages.addMessagesToThread
     ).withOptimisticUpdate((localStore, args) => {
@@ -119,7 +119,7 @@ export function ChatInput() {
         threadId: threadIdToUse,
       });
     } catch (e) {
-      console.log(e);
+      console.log("add:message error", e);
       setPrompt(prevString);
     }
   };

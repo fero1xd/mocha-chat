@@ -5,10 +5,16 @@ import {
   ConvexProviderWithAuth,
   ConvexReactClient,
 } from "convex/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  MutationCache,
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useAuthForConvex } from "@/hooks/use-auth";
+import { useModals } from "@/stores/use-modals";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 const convexQueryClient = new ConvexQueryClient(convex);
@@ -21,8 +27,20 @@ export const queryClient = new QueryClient({
 
       refetchOnWindowFocus: false,
       refetchOnMount: false,
+
+      retry: 2,
     },
   },
+  mutationCache: new MutationCache({
+    onError(error, variables, context, mutation) {
+      console.log({ mutation, error: error.message });
+      const { showAuthModal } =
+        mutation.meta ?? ({} as { showAuthModal?: boolean });
+      if (showAuthModal) {
+        useModals.getState().setAuth(true);
+      }
+    },
+  }),
 });
 
 convexQueryClient.connect(queryClient);
