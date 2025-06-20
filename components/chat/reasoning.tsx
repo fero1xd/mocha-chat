@@ -1,13 +1,16 @@
 import { memo, useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import MemoizedMarkdown from "./markdown";
+import { cn } from "@/lib/utils";
 
 function PureMessageReasoning({
   reasoning,
   id,
+  isDone,
 }: {
   reasoning: string;
   id: string;
+  isDone: boolean;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -26,7 +29,7 @@ function PureMessageReasoning({
             <ChevronDownIcon className="w-4 h-4" />
           </span>
         )}
-        <span>Reasoning</span>
+        <span className={cn(!isDone && "animate-pulse")}>Reasoning</span>
       </button>
       {isExpanded && (
         <div className="p-4 rounded-md bg-secondary/10 text-xs border">
@@ -38,5 +41,9 @@ function PureMessageReasoning({
 }
 
 export default memo(PureMessageReasoning, (prev, next) => {
-  return prev.reasoning === next.reasoning && prev.id === next.id;
+  return (
+    prev.reasoning === next.reasoning &&
+    prev.id === next.id &&
+    prev.isDone === next.isDone
+  );
 });

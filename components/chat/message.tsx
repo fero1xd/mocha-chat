@@ -36,7 +36,7 @@ function RawMessage({ msg, isLast }: Props) {
     >
       <div className="group relative w-full max-w-full break-words">
         {msg.reasoning ? (
-          <Reasoning id={msg.id} reasoning={msg.reasoning} />
+          <Reasoning id={msg.id} reasoning={msg.reasoning} isDone />
         ) : null}
         <MemoizedMarkdown content={msg.content} id={msg.id} />
 
@@ -61,15 +61,21 @@ function LocalAssistantMessage({ msg }: { msg: Doc<"messages"> }) {
     <div className={cn("flex justify-start", "last:min-h-[calc(100vh-23rem)]")}>
       <div className="group relative w-full max-w-full break-words">
         {!hasAnything && !isDone && <MessageLoading />}
-        {reasoning ? <Reasoning id={msg.id} reasoning={reasoning} /> : null}
+        {reasoning ? (
+          <Reasoning
+            id={msg.id}
+            reasoning={reasoning}
+            isDone={isDone || !!text || !!error}
+          />
+        ) : null}
         <MemoizedMarkdown
-          content={localContent ? localContent.text : msg.content}
+          content={localContent ? text : msg.content}
           id={msg.id}
         />
         {successfulyDone ? (
-          <ChatAction role="assistant" content={localContent.text} />
+          <ChatAction role="assistant" content={text} />
         ) : null}
-        {localContent?.error ? <Error message={localContent.error} /> : null}
+        {error ? <Error message={error} /> : null}
       </div>
     </div>
   );
