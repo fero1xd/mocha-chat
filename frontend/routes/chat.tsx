@@ -8,6 +8,7 @@ import { useInView } from "react-intersection-observer";
 export function ChatPage() {
   const { ref: bottomRef, inView } = useInView();
   const localRef = useRef<HTMLDivElement | null>(null);
+  const isFirstRender = useRef(true);
 
   const setRefs = useCallback(
     (node: HTMLDivElement) => {
@@ -23,8 +24,8 @@ export function ChatPage() {
       <div className="p-4 pt-0 flex h-full w-full flex-col pb-[30px] overflow-y-auto">
         <div className="flex-1 pt-12 max-sm:pt-14 pb-[122px]">
           <Messages
+            isFirstRender={isFirstRender}
             scrollToBottom={() => {
-              console.log("scroll to bottom");
               localRef.current?.scrollIntoView({ behavior: "instant" });
               localRef.current?.classList.remove("min-h-[calc(100vh-20rem)]");
             }}
@@ -38,7 +39,7 @@ export function ChatPage() {
           scrollToBottom={() => {
             localRef.current?.scrollIntoView({ behavior: "instant" });
           }}
-          inView={inView}
+          inView={inView || isFirstRender.current}
         />
         <ChatInput />
       </div>

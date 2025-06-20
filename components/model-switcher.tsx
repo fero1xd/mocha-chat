@@ -46,7 +46,7 @@ export function ModelSwitcher() {
                   className="py-4"
                 >
                   {m.toLowerCase().startsWith("gemini") ? <Gemini /> : null}
-                  {m.toLowerCase().startsWith("openai") ? <OpenAI /> : null}
+                  {m.toLowerCase().startsWith("gpt") ? <OpenAI /> : null}
                   {m}
                   <Check
                     className={cn(

@@ -1,11 +1,17 @@
 import { api } from "@/convex/_generated/api";
 import { convexQuery } from "@convex-dev/react-query";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { Ref, RefObject, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { Message } from "./message";
 
-export function Messages({ scrollToBottom }: { scrollToBottom: () => void }) {
+export function Messages({
+  scrollToBottom,
+  isFirstRender,
+}: {
+  scrollToBottom: () => void;
+  isFirstRender: RefObject<boolean>;
+}) {
   const { threadId } = useParams() as { threadId: string };
 
   const { data: messages } = useQuery(
@@ -14,7 +20,6 @@ export function Messages({ scrollToBottom }: { scrollToBottom: () => void }) {
     })
   );
 
-  const isFirstRender = useRef(true);
   const [initialMessageLength, setIniLength] = useState<number | null>(null);
 
   useEffect(() => {
