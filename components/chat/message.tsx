@@ -25,13 +25,13 @@ function RawMessage({ msg, isLast }: Props) {
     );
   }
 
-  if (!msg.content) return <LocalAssistantMessage msg={msg} isLast={isLast} />;
+  if (!msg.content) return <LocalAssistantMessage msg={msg} />;
 
   return (
     <div
       className={cn(
         "flex justify-start",
-        isLast ? "min-h-[calc(100vh-24rem)]" : null
+        isLast ? "min-h-[calc(100vh-23rem)]" : null
       )}
     >
       <div className="group relative w-full max-w-full break-words">
@@ -46,7 +46,7 @@ function RawMessage({ msg, isLast }: Props) {
   );
 }
 
-function LocalAssistantMessage({ msg, isLast }: Props) {
+function LocalAssistantMessage({ msg }: { msg: Doc<"messages"> }) {
   const localMsgs = useCurrentGeneration((s) => s.messages);
   const localContent = localMsgs.find((c) => c.id === msg.id);
   if (!localContent) return <></>;
@@ -58,12 +58,7 @@ function LocalAssistantMessage({ msg, isLast }: Props) {
   const hasAnything = error || text || reasoning;
 
   return (
-    <div
-      className={cn(
-        "flex justify-start",
-        isLast ? "min-h-[calc(100vh-24rem)]" : null
-      )}
-    >
+    <div className={cn("flex justify-start", "last:min-h-[calc(100vh-23rem)]")}>
       <div className="group relative w-full max-w-full break-words">
         {!hasAnything && !isDone && <MessageLoading />}
         {reasoning ? <Reasoning id={msg.id} reasoning={reasoning} /> : null}

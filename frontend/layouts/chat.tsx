@@ -8,7 +8,7 @@ export function ChatLayout() {
   return (
     <>
       <AuthModal />
-      <SidebarInset className="h-screen relative">
+      <SidebarInset className="h-screen flex flex-col">
         <Outlet key={location.key} />
       </SidebarInset>
       <AppSidebar />

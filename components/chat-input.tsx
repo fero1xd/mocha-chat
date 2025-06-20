@@ -35,21 +35,31 @@ export function ChatInput() {
         }
       );
 
-      localStore.setQuery(
-        api.messages.getThreadMessages,
-        {
-          threadId: args.threadId,
-        },
-        [
-          ...(existingThreadMessages ?? []),
-          ...args.messages.map((msg) => ({
-            _id: crypto.randomUUID() as Id<"messages">,
-            _creationTime: Date.now(),
+      // Idk whenever i update the localStore with
+      // more than 1 item inside the array, the items are added
+      // really slowly
+      //
+      // example: [{ user, "hello"}, { assistant, ""}]
+      // THe above messages would be rendered 1 by 1 with
+      // a 200-300 ms delay between them. IDK what it is but
+      // using a set timeout with >= 0 fixes it ?????????????
+      setTimeout(() => {
+        localStore.setQuery(
+          api.messages.getThreadMessages,
+          {
             threadId: args.threadId,
-            ...msg,
-          })),
-        ]
-      );
+          },
+          [
+            ...(existingThreadMessages ?? []),
+            ...args.messages.map((msg) => ({
+              _id: crypto.randomUUID() as Id<"messages">,
+              _creationTime: Date.now(),
+              threadId: args.threadId,
+              ...msg,
+            })),
+          ]
+        );
+      }, 0);
     }),
   });
 

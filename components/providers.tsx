@@ -1,20 +1,19 @@
-import { CookiesProvider } from "react-cookie";
+import { useAuthForConvex } from "@/hooks/use-auth";
+import { useModals } from "@/stores/use-modals";
 import { ConvexQueryClient } from "@convex-dev/react-query";
+import {
+  MutationCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   ConvexProvider,
   ConvexProviderWithAuth,
   ConvexReactClient,
 } from "convex/react";
-import {
-  MutationCache,
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
 import { ReactNode } from "react";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { useAuthForConvex } from "@/hooks/use-auth";
-import { useModals } from "@/stores/use-modals";
+import { CookiesProvider } from "react-cookie";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 const convexQueryClient = new ConvexQueryClient(convex);
