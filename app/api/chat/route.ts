@@ -1,18 +1,17 @@
-import "./sentry";
-import * as Sentry from "@sentry/node";
 import { api } from "@/convex/_generated/api";
 import { auth } from "@/lib/auth";
 import { generateTitle } from "@/lib/chat/generate-title";
 import { systemPrompt } from "@/lib/chat/system-prompt";
 import { MODELS_CONFIG } from "@/lib/model-config";
+import { ratelimit } from "@/lib/redis";
 import { convex } from "@/lib/server-convex";
+import * as Sentry from "@sentry/node";
 import { CoreMessage, Message, smoothStream, streamText } from "ai";
 import { cookies as getCookies, headers as getHeaders } from "next/headers";
 import { after, NextResponse } from "next/server";
-import { phNode } from "./ph";
-import { ratelimit } from "@/lib/redis";
 import { RatelimitError } from "./errors";
-import { openai } from "@ai-sdk/openai";
+import { phNode } from "./ph";
+import "./sentry";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -92,6 +91,8 @@ export async function POST(req: Request) {
       },
       experimental_transform: [smoothStream({ chunking: "word" })],
       onFinish: async (e) => {
+        console.dir(e.providerMetadata, { depth: null });
+        console.dir(e.usage, { depth: null });
         await convex.mutation(api.threads.updateThreadStreaming, {
           threadId,
           isStreaming: false,
@@ -105,13 +106,12 @@ export async function POST(req: Request) {
         });
       },
       maxRetries: 0,
-      //   tools: {
-      //     web_search_preview: openai.tools.webSearchPreview(),
-      //   },
-      //   toolChoice: {
-      //     type: "tool",
-      //     toolName: "web_search_preview",
-      //   },
+
+      providerOptions: {
+        openai: {
+          reasoningSummary: "auto",
+        },
+      },
     });
 
     req.signal.onabort = async () => {
