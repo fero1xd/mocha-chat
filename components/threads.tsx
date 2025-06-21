@@ -29,28 +29,25 @@ export function Threads() {
   const threadSearch = useThreadsSearch((s) => s.search);
 
   const { pinned, today, yesterday, older } = useMemo(() => {
-    const now = new Date(Date.now());
-    const oneDayInMs = 60 * 60 * 24 * 1000;
+    const now = Date.now();
+    const nowDate = new Date(now);
 
     const obj = {
       pinned: threads.filter((th) => th.pinned),
       today: threads.filter(
-        (th) => now.getTime() - th.lastMessageAt < oneDayInMs && !th.pinned
+        (th) =>
+          nowDate.getDate() === new Date(th.lastMessageAt).getDate() &&
+          !th.pinned
       ),
       yesterday: threads.filter((th) => {
         if (th.pinned) return false;
         const lastMsg = new Date(th.lastMessageAt);
-        const diffMs = now.getTime() - lastMsg.getTime();
-
-        const oneDayInMs = 60 * 60 * 24 * 1000;
-        const twoDayInMs = oneDayInMs * 2;
-
-        return diffMs > oneDayInMs && diffMs < twoDayInMs;
+        return nowDate.getDate() - lastMsg.getDate() === 1;
       }),
       older: threads.filter((th) => {
         if (th.pinned) return false;
         const lastMsg = new Date(th.lastMessageAt);
-        return now.getDate() - lastMsg.getDate() > 1;
+        return nowDate.getDate() - lastMsg.getDate() > 1;
       }),
     };
 
