@@ -31,12 +31,12 @@ const schema = defineSchema({
   messages: defineTable({
     id: v.string(),
     threadId: v.string(),
-    model: v.string(),
+    model: v.optional(v.string()),
     role: roleValidator,
 
     content: v.string(),
     reasoning: v.optional(v.string()),
-    status: statusValidator,
+    status: v.optional(statusValidator),
   })
     .index("by_thread_id", ["threadId"])
     .index("by_message_id", ["id"]),
