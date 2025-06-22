@@ -1,12 +1,11 @@
-const url = "https://mocha.fairmine.live";
 export default {
-    providers: [
-        {
-            type: "customJwt",
-            applicationId: url,
-            issuer: url,
-            jwks: `${url}/api/auth/jwks`,
-            algorithm: "RS256",
-        },
-    ],
+  providers: [
+    {
+      type: "customJwt",
+      applicationId: process.env.APPLICATION_ID,
+      issuer: process.env.ISSUER,
+      jwks: process.env.JWKS_URL,
+      algorithm: "RS256",
+    },
+  ],
 };
