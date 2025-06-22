@@ -1,6 +1,7 @@
 import { useModel } from "@/stores/model";
 import { useCurrentGeneration } from "@/stores/use-current-generation";
 import { Message, processDataStream } from "ai";
+import { betterJsonParse } from "../utils";
 
 type Args = {
   messages: Message[];
@@ -39,9 +40,18 @@ export async function generateStream({ messages, messageId, threadId }: Args) {
     });
 
     if (!res.ok) {
+      let emsg: string =
+        "An error occured while generating a response";
+
+      try {
+        const e = await res.json();
+        if (e.error) {
+          emsg = e.error as string;
+        }
+      } catch { }
+
       useCurrentGeneration.setState((prev) => {
-        prev.messages[index].error =
-          "An error occured while generating a response";
+        prev.messages[index].error = emsg;
         prev.messages[index].isDone = true;
         return {
           messages: [...prev.messages],
