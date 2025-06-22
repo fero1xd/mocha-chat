@@ -18,7 +18,11 @@ function RawMessage({ msg, isLast }: Props) {
     return (
       <div className="flex justify-end user-msg">
         <div className="group relative inline-block max-w-[80%] break-words rounded-xl border border-secondary/50 bg-secondary/50 px-4 py-3 text-left">
-          <MemoizedMarkdown content={msg.content} id={msg.id} />
+          <MemoizedMarkdown
+            content={msg.content}
+            id={msg.id}
+            className="whitespace-pre-line"
+          />
           <ChatAction role="user" content={msg.content} />
         </div>
       </div>

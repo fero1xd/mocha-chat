@@ -13,6 +13,7 @@ import ShikiHighlighter, {
   createOnigurumaEngine,
 } from "react-shiki/core";
 import { cn } from "@/lib/utils";
+import { ClassValue } from "clsx";
 
 const highlighter = await createHighlighterCore({
   themes: [import("@shikijs/themes/kanagawa-dragon")],
@@ -112,16 +113,23 @@ const MarkdownRendererBlock = memo(
 MarkdownRendererBlock.displayName = "MarkdownRendererBlock";
 
 const MemoizedMarkdown = memo(
-  ({ content, id }: { content: string; id: string; size?: MarkdownSize }) => {
+  ({
+    content,
+    id,
+    className,
+  }: {
+    content: string;
+    id: string;
+    size?: MarkdownSize;
+    className?: ClassValue;
+  }) => {
     const blocks = useMemo(() => parseMarkdownIntoBlocks(content), [content]);
 
     const proseClasses =
       "prose max-w-none dark:prose-invert prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0 prose-code:before:content-none prose-code:after:content-none";
 
     return (
-      <div
-        className={cn(proseClasses, "whitespace-pre-line marker:text-white")}
-      >
+      <div className={cn(proseClasses, "marker:text-white", className)}>
         {blocks.map((block, index) => (
           <MarkdownRendererBlock content={block} key={`${id}-block-${index}`} />
         ))}
