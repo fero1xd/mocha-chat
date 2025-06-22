@@ -35,7 +35,10 @@ export const queryClient = new QueryClient({
       console.log({ mutation, error: error.message });
       const { showAuthModal } =
         mutation.meta ?? ({} as { showAuthModal?: boolean });
-      if (showAuthModal) {
+      if (
+        showAuthModal &&
+        error.message.toLocaleLowerCase().includes("authentication required")
+      ) {
         useModals.getState().setAuth(true);
       }
     },

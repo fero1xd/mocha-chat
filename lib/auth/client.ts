@@ -3,7 +3,7 @@ import { User } from "better-auth";
 import { createAuthClient } from "better-auth/react";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-const url = `${process.env.NODE_ENV === 'development' ? 'http' : 'https'}://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`;
+const url = `${process.env.NODE_ENV === "development" ? "http" : "https"}://${process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL}`;
 
 export const authClient = createAuthClient({
   baseURL: url,
@@ -35,7 +35,7 @@ export const sessionQueryOptions = queryOptions({
         },
       },
     });
-    if (!jwt) throw new Error("oh no");
+    if (!jwt) throw new Error("no jwt in session response");
     return { ...session.data, jwt: jwt as string };
   },
   retry: false,

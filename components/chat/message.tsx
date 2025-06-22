@@ -1,4 +1,4 @@
-import { Doc } from "@/convex/_generated/dataModel";
+import { Message as TMessage } from "@/convex/types";
 import { useCurrentGeneration } from "@/stores/use-current-generation";
 import { ChatAction } from "./chat-action";
 import MemoizedMarkdown from "./markdown";
@@ -9,23 +9,24 @@ import { MessageLoading } from "./loading";
 import { Error } from "./error";
 
 type Props = {
-  msg: Doc<"messages">;
+  msg: TMessage;
   isLast: boolean;
 };
 
 function RawMessage({ msg, isLast }: Props) {
   if (msg.role === "user") {
     return (
-      <div className="flex justify-end">
+      <div className="flex justify-end user-msg">
         <div className="group relative inline-block max-w-[80%] break-words rounded-xl border border-secondary/50 bg-secondary/50 px-4 py-3 text-left">
-          <p>{msg.content}</p>
+          <MemoizedMarkdown content={msg.content} id={msg.id} />
           <ChatAction role="user" content={msg.content} />
         </div>
       </div>
     );
   }
 
-  if (!msg.content) return <LocalAssistantMessage msg={msg} />;
+  if (msg.status === "waiting" || msg.status === "streaming")
+    return <LocalAssistantMessage msg={msg} />;
 
   return (
     <div
@@ -38,15 +39,17 @@ function RawMessage({ msg, isLast }: Props) {
         {msg.reasoning ? (
           <Reasoning id={msg.id} reasoning={msg.reasoning} isDone />
         ) : null}
-        <MemoizedMarkdown content={msg.content} id={msg.id} />
-
-        <ChatAction role="assistant" content={msg.content} />
+        {msg.status !== "error" && (
+          <MemoizedMarkdown content={msg.content} id={msg.id} />
+        )}
+        {msg.status === "error" ? <Error message={msg.content} /> : null}
+        <ChatAction role="assistant" content={msg.content} model={msg.model} />
       </div>
     </div>
   );
 }
 
-function LocalAssistantMessage({ msg }: { msg: Doc<"messages"> }) {
+function LocalAssistantMessage({ msg }: { msg: TMessage }) {
   const localMsgs = useCurrentGeneration((s) => s.messages);
   const localContent = localMsgs.find((c) => c.id === msg.id);
   if (!localContent) return <></>;
@@ -54,13 +57,11 @@ function LocalAssistantMessage({ msg }: { msg: Doc<"messages"> }) {
   const { isDone, text, reasoning, error } = localContent;
 
   const successfulyDone = isDone && !error && text;
-
-  const hasAnything = error || text || reasoning;
-
+  const isWaiting = msg.status === "waiting" && !text && !error;
   return (
     <div className={cn("flex justify-start", "last:min-h-[calc(100vh-23rem)]")}>
       <div className="group relative w-full max-w-full break-words">
-        {!hasAnything && !isDone && <MessageLoading />}
+        {isWaiting && <MessageLoading />}
         {reasoning ? (
           <Reasoning
             id={msg.id}
@@ -68,14 +69,11 @@ function LocalAssistantMessage({ msg }: { msg: Doc<"messages"> }) {
             isDone={isDone || !!text || !!error}
           />
         ) : null}
-        <MemoizedMarkdown
-          content={localContent ? text : msg.content}
-          id={msg.id}
-        />
-        {successfulyDone ? (
-          <ChatAction role="assistant" content={text} />
-        ) : null}
+        {!error && <MemoizedMarkdown content={text} id={msg.id} />}
         {error ? <Error message={error} /> : null}
+        {successfulyDone ? (
+          <ChatAction role="assistant" content={text} model={msg.model} />
+        ) : null}
       </div>
     </div>
   );

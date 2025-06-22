@@ -12,6 +12,7 @@ import ShikiHighlighter, {
   createHighlighterCore,
   createOnigurumaEngine,
 } from "react-shiki/core";
+import { cn } from "@/lib/utils";
 
 const highlighter = await createHighlighterCore({
   themes: [import("@shikijs/themes/kanagawa-dragon")],
@@ -115,10 +116,12 @@ const MemoizedMarkdown = memo(
     const blocks = useMemo(() => parseMarkdownIntoBlocks(content), [content]);
 
     const proseClasses =
-      "prose prose-pink max-w-none dark:prose-invert prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0 prose-code:before:content-none prose-code:after:content-none";
+      "prose max-w-none dark:prose-invert prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0 prose-code:before:content-none prose-code:after:content-none";
 
     return (
-      <div className={proseClasses}>
+      <div
+        className={cn(proseClasses, "whitespace-pre-line marker:text-white")}
+      >
         {blocks.map((block, index) => (
           <MarkdownRendererBlock content={block} key={`${id}-block-${index}`} />
         ))}

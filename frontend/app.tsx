@@ -1,9 +1,10 @@
 import { Providers } from "@/components/providers";
+import { ErrorBoundary } from "@sentry/react";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { ChatLayout } from "./layouts/chat";
 import { HomePage } from "./routes";
 import { ChatPage } from "./routes/chat";
-import { ErrorBoundary } from "@sentry/react";
+import { RootLayout } from "./layouts";
 
 export default function App() {
   return (
@@ -11,9 +12,11 @@ export default function App() {
       <Providers>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<ChatLayout />}>
-              <Route index element={<HomePage />} />
-              <Route path="/:threadId" element={<ChatPage />} />
+            <Route element={<RootLayout />}>
+              <Route path="/" element={<ChatLayout />}>
+                <Route index element={<HomePage />} />
+                <Route path="/:threadId" element={<ChatPage />} />
+              </Route>
             </Route>
           </Routes>
         </BrowserRouter>

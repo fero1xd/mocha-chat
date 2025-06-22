@@ -15,7 +15,7 @@ export function BottomWrapper({
       localRef.current = node;
       bottomRef(node);
     },
-    [bottomRef]
+    [bottomRef, localRef]
   );
 
   return (

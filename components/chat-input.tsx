@@ -9,11 +9,11 @@ import { useModals } from "@/stores/use-modals";
 import { useConvex, useConvexMutation } from "@convex-dev/react-query";
 import { ArrowUp } from "lucide-react";
 import { nanoid } from "nanoid";
-import posthog from "posthog-js";
 import { useNavigate, useParams } from "react-router";
-import { ModelSwitcher } from "./model-switcher";
+import { ModelSwitcher } from "./models/model-switcher";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
+import { captureChatGenerate } from "@/lib/analytics";
 
 export function ChatInput() {
   const { threadId } = useParams();
@@ -66,6 +66,7 @@ export function ChatInput() {
   const onSubmit = async () => {
     // we save re renders this way
     const { prompt, setPrompt } = useChatbox.getState();
+    const model = useModel.getState().model;
     if (!prompt) return;
     if (!realUser) {
       setAuthModal(true);
@@ -87,15 +88,14 @@ export function ChatInput() {
         id: nanoid(),
         content: prompt,
         role: "user" as const,
+        status: "done" as const,
+        model,
       };
 
       const isNewThread = threadId !== threadIdToUse;
-
-      posthog.capture("chat-generate", {
-        threadIdToUse,
-        prompt,
-        model: useModel.getState().model,
-        isNewThread,
+      captureChatGenerate({
+        threadId: threadIdToUse,
+        model,
       });
 
       const chatHistory = isNewThread
@@ -112,6 +112,8 @@ export function ChatInput() {
             id: assistantMsgId,
             content: "",
             role: "assistant",
+            model,
+            status: "waiting",
           },
         ],
       });

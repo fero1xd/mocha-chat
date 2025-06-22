@@ -40,7 +40,12 @@ export function Messages({
       messages[messages.length - 1].content === "";
 
     if (isWaitingForAssistant) {
-      scrollToBottom();
+      const els = document.querySelectorAll(".user-msg");
+      const last = els[els.length - 1];
+      if (last.clientHeight > 85) {
+        return;
+      }
+      last.scrollIntoView({ behavior: "instant" });
     }
   }, [messages, initialMessageLength]);
 

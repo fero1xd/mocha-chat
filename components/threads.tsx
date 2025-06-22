@@ -1,4 +1,4 @@
-import { Doc } from "@/convex/_generated/dataModel";
+import { Thread } from "@/convex/types";
 import { useThreads } from "@/hooks/use-threads";
 import { cn, lowerCaseIncludes } from "@/lib/utils";
 import { useThreadsSearch } from "@/stores/use-thread-search";
@@ -98,8 +98,8 @@ function SingleThread({
   selectedThread,
   thread,
 }: {
-  selectedThread?: Doc<"threads">;
-  thread: Doc<"threads">;
+  selectedThread?: Thread;
+  thread: Thread;
 }) {
   const isActive = selectedThread?.id === thread.id;
   return (
