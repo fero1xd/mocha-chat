@@ -42,12 +42,12 @@ export function Threads() {
       yesterday: threads.filter((th) => {
         if (th.pinned) return false;
         const lastMsg = new Date(th.lastMessageAt);
-        return nowDate.getDate() - lastMsg.getDate() === 1;
+        return Math.abs(nowDate.getDate() - lastMsg.getDate()) === 1;
       }),
       older: threads.filter((th) => {
         if (th.pinned) return false;
         const lastMsg = new Date(th.lastMessageAt);
-        return nowDate.getDate() - lastMsg.getDate() > 1;
+        return Math.abs(nowDate.getDate() - lastMsg.getDate()) > 1;
       }),
     };
 
