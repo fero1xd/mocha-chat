@@ -10,7 +10,7 @@ export const MODELS_CONFIG: {
   };
 } = {
   "Gemini 2.5 flash": {
-    provider: google("gemini-2.5-flash-preview-04-17"),
+    provider: google("gemini-2.5-flash"),
   },
   "GPT 4.1 nano": {
     provider: openai.responses("gpt-4.1-nano-2025-04-14"),
